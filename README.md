@@ -30,6 +30,8 @@ supabase db push
 
 Les types TypeScript générés depuis le schéma sont dans `lib/supabase/database.types.ts` et utilisés par le client dans `lib/supabase/client.ts`.
 
+📖 **Référence complète du schéma** (colonnes, contraintes, politiques RLS exactes, buckets, exemples de requêtes) : voir [`docs/DATABASE.md`](docs/DATABASE.md). À lire avant de coder une fonctionnalité touchant aux données — la base est déjà en place, il n'est pas nécessaire d'y accéder directement pour connaître son fonctionnement.
+
 ## Développement local
 
 1. Copier `.env.example` vers `.env.local` et renseigner les clés Supabase (URL du projet et clé publique `anon`, disponibles dans les paramètres API du projet Supabase).
