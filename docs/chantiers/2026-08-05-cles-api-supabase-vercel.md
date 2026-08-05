@@ -1,7 +1,8 @@
 # Chantier : récupérer les clés API Supabase et les câbler sur Vercel
 
-**Statut : Ouvert**
+**Statut : Clôturé partiellement**
 **Demandé le : 2026-08-05**
+**Clôturé le : 2026-08-05**
 
 ## Contexte
 
@@ -31,8 +32,28 @@ données, ni en local ni en production.
 - Un déploiement de production qui affiche des données réelles issues de
   Supabase (ou au minimum ne lève plus d'erreur de connexion).
 
-## Critère de clôture
+## Résolution
 
-Ce fichier est mis à jour avec le statut `Clôturé`, la date, et confirmation
-que les variables sont bien définies sur Vercel (sans jamais y coller la
-valeur de la clé en clair dans ce document).
+L'accès MCP Supabase de cette session ne voit pas le projet `jcmcpkssjobqkmdopnhj`
+(compte/organisation différent de celui connecté). Impossible également de
+définir une variable d'environnement Vercel persistante : aucun outil MCP
+Vercel disponible dans cette session ne le permet.
+
+Contournement appliqué :
+- L'utilisateur a transmis directement l'URL et la clé `anon` (récupérées
+  dans Supabase → Project Settings → Data API).
+- `NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` ont été
+  ajoutées dans `.env.local` (non commité) pour le développement local.
+- Un nouveau déploiement de production a été déclenché en embarquant ces
+  deux valeurs dans un `.env.production` fourni uniquement à l'outil de
+  déploiement (jamais commité au dépôt). Déploiement `READY` confirmé.
+
+## Reste à faire (hors de portée de cette session)
+
+Ce déploiement fonctionne, mais les variables ne sont **pas** enregistrées
+de façon persistante dans les paramètres du projet Vercel. Tout futur
+déploiement déclenché autrement que par cette procédure manuelle (ex. via
+Git une fois le repo lié) n'aura pas ces variables tant qu'elles n'auront
+pas été ajoutées dans Vercel → Project Settings → Environment Variables.
+Un agent disposant de l'outillage Vercel adéquat (ou l'utilisateur,
+manuellement) doit clôturer ce point pour une clôture complète.
