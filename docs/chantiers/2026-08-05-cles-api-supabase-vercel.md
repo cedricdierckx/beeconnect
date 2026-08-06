@@ -57,3 +57,33 @@ Git une fois le repo lié) n'aura pas ces variables tant qu'elles n'auront
 pas été ajoutées dans Vercel → Project Settings → Environment Variables.
 Un agent disposant de l'outillage Vercel adéquat (ou l'utilisateur,
 manuellement) doit clôturer ce point pour une clôture complète.
+
+## Nouvelle tentative — 2026-08-06
+
+Cette session dispose d'un accès MCP Supabase fonctionnel sur le projet
+`jcmcpkssjobqkmdopnhj` (contrairement à la session précédente) : l'URL et la
+clé `anon` ont été reconfirmées et sont correctes dans `.env.local`.
+
+Le connecteur MCP Vercel a également été activé pour cette conversation,
+avec accès confirmé au projet `beeconnect`
+(id `prj_X1lDMjxvSAsYFbVBOieAPgN0YOpV`, équipe `cedricdierckxs-projects`,
+id `team_6VGvDqwtDoFbxiAx0Yi0LvBR`, dernier déploiement production `READY`).
+
+**Constat** : la surface d'outils exposée par ce connecteur MCP Vercel ne
+contient aucun moyen de lire ou d'écrire des variables d'environnement de
+projet (uniquement : projets, déploiements, protection de déploiement,
+analytics web, logs runtime, achats, recherche documentaire). Le blocage
+n'est donc plus un problème d'autorisation ou de connexion, mais une
+limite structurelle de l'outillage actuellement disponible — confirmé à
+100 % après recherche exhaustive des outils du connecteur.
+
+**Statut : toujours Bloqué.** Ce chantier ne peut être clôturé que par :
+- l'utilisateur, manuellement, dans Vercel → projet `beeconnect` →
+  Settings → Environment Variables (Production **et** Preview) :
+  - `NEXT_PUBLIC_SUPABASE_URL` = `https://jcmcpkssjobqkmdopnhj.supabase.co`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = valeur `anon` du projet Supabase
+    (Project Settings → Data API dans Supabase, ou déjà présente dans
+    `.env.local` en local) — puis un redéploiement ; ou
+- un futur agent disposant d'un outillage Vercel exposant la gestion des
+  variables d'environnement (CLI `vercel env add`, jeton d'API Vercel
+  utilisable via appel HTTP direct, ou un connecteur MCP plus complet).
