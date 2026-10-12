@@ -33,6 +33,17 @@ export async function signUp(params: {
   });
 }
 
+/** Renvoie l'e-mail de confirmation d'inscription. */
+export async function resendConfirmation(email: string) {
+  return supabase.auth.resend({
+    type: "signup",
+    email,
+    options: {
+      emailRedirectTo: typeof window !== "undefined" ? `${window.location.origin}/feed` : undefined,
+    },
+  });
+}
+
 export async function signIn(email: string, password: string) {
   return supabase.auth.signInWithPassword({ email, password });
 }

@@ -214,6 +214,19 @@ ne peut pas s'abonner à lui-même.
 | `category_stats` | Par catégorie : graines, floraisons, pollinisations |
 | `global_stats` | Une ligne : totaux de la plateforme |
 
+## Authentification (Supabase Auth)
+
+- Inscription par e-mail + mot de passe avec **confirmation par e-mail**. `signUp` passe
+  `emailRedirectTo = <origine>/feed` ; ce lien n'est accepté que s'il figure dans
+  Supabase → Authentication → URL Configuration → **Redirect URLs**, sinon Supabase
+  redirige vers la **Site URL**. Réglages attendus :
+  - Site URL : `https://beeconnect-eight.vercel.app`
+  - Redirect URLs : `https://beeconnect-eight.vercel.app/**`, `http://localhost:3000/**`
+- Ces réglages ne sont **pas** modifiables via le MCP Supabase (console uniquement).
+- Un lien d'e-mail déjà utilisé (ou pré-ouvert par un antivirus de messagerie) renvoie
+  `#error=access_denied&error_code=otp_expired` : géré par `app/components/AuthLinkHandler.tsx`
+  (message + redirection vers `/login?lien=expire`, avec bouton « Renvoyer l'e-mail »).
+
 ## Stockage (Storage)
 
 Deux buckets publics en lecture :

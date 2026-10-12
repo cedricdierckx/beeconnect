@@ -6,6 +6,7 @@ import { ToastProvider } from "./components/Toaster";
 import NavBar from "./components/NavBar";
 import BottomNav from "./components/BottomNav";
 import Footer from "./components/Footer";
+import AuthLinkHandler from "./components/AuthLinkHandler";
 
 const display = Fredoka({ subsets: ["latin"], variable: "--font-display", weight: ["400", "500", "600", "700"] });
 const body = Nunito({ subsets: ["latin"], variable: "--font-body" });
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen">
         <AuthProvider>
           <ToastProvider>
+            <AuthLinkHandler />
             <NavBar />
             <main className="mx-auto w-full max-w-5xl px-4 pb-28 pt-4 sm:pb-12">{children}</main>
             <Footer />
