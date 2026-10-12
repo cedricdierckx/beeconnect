@@ -7,6 +7,7 @@ import NavBar from "./components/NavBar";
 import BottomNav from "./components/BottomNav";
 import Footer from "./components/Footer";
 import AuthLinkHandler from "./components/AuthLinkHandler";
+import ServiceWorker from "./components/ServiceWorker";
 
 const display = Fredoka({ subsets: ["latin"], variable: "--font-display", weight: ["400", "500", "600", "700"] });
 const body = Nunito({ subsets: ["latin"], variable: "--font-body" });
@@ -18,9 +19,16 @@ export const metadata: Metadata = {
   },
   description:
     "Partage tes actions environnementales concrètes, pollinise les bonnes idées et fais-les fleurir ailleurs.",
+  applicationName: "EarthConnect",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐝</text></svg>",
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" },
+    ],
+    apple: "/icons/apple-touch-icon.png",
   },
+  appleWebApp: { capable: true, title: "EarthConnect", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
@@ -34,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <ToastProvider>
             <AuthLinkHandler />
+            <ServiceWorker />
             <NavBar />
             <main className="mx-auto w-full max-w-5xl px-4 pb-28 pt-4 sm:pb-12">{children}</main>
             <Footer />
