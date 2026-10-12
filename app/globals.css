@@ -1,20 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 body {
-  margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #f4f8f4;
-  color: #10261a;
+  @apply bg-cream text-leaf-900 font-sans antialiased;
+  background-image:
+    radial-gradient(circle at 10% 0%, rgba(255, 201, 60, 0.18), transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(63, 180, 108, 0.14), transparent 45%);
+  background-attachment: fixed;
 }
 
-main {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 4rem 1.5rem;
+h1,
+h2,
+h3,
+h4 {
+  @apply font-display;
 }
 
-h1 {
-  color: #1e5c3a;
+@layer components {
+  .card {
+    @apply rounded-3xl bg-white shadow-soft ring-1 ring-leaf-900/5;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-display font-semibold transition active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply btn bg-leaf-500 text-white shadow-[0_4px_0_0_#1B5E37] hover:bg-leaf-400 active:shadow-[0_1px_0_0_#1B5E37];
+  }
+
+  .btn-honey {
+    @apply btn bg-honey-400 text-leaf-900 shadow-[0_4px_0_0_#D48F00] hover:bg-honey-300 active:shadow-[0_1px_0_0_#D48F00];
+  }
+
+  .btn-ghost {
+    @apply btn bg-white text-leaf-800 ring-2 ring-leaf-900/10 hover:bg-leaf-50;
+  }
+
+  .input {
+    @apply w-full rounded-2xl border-2 border-leaf-900/10 bg-white px-4 py-3 text-leaf-900 outline-none transition placeholder:text-leaf-900/40 focus:border-leaf-400 focus:ring-4 focus:ring-leaf-200/60;
+  }
+
+  .label {
+    @apply mb-1.5 block font-display text-sm font-semibold text-leaf-800;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
