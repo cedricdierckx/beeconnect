@@ -24,6 +24,11 @@ export async function GET() {
     category_stats: supabase.from("category_stats").select("*").limit(1),
     global_stats: supabase.from("global_stats").select("*").limit(1),
     follows: supabase.from("follows").select("following_id").limit(1),
+    blooms: supabase
+      .from("posts")
+      .select("id, author:profiles!posts_author_id_fkey(username, avatar_url)")
+      .eq("kind", "bloom")
+      .limit(1),
   };
 
   const results: Record<string, string> = {};

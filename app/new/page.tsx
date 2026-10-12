@@ -48,7 +48,7 @@ function NewPostForm() {
     if (!bloomOf) return;
     supabase
       .from("posts")
-      .select("id, title, content, category, image_url, author:profiles(username)")
+      .select("id, title, content, category, image_url, author:profiles!posts_author_id_fkey(username)")
       .eq("id", bloomOf)
       .maybeSingle()
       .then(({ data }) => {

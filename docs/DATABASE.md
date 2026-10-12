@@ -243,7 +243,7 @@ import { supabase } from "@/lib/supabase/client";
 // Fil de publications le plus récent, avec l'auteur
 const { data: posts } = await supabase
   .from("posts")
-  .select("*, profiles(username, avatar_url)")
+  .select("*, author:profiles!posts_author_id_fkey(username, avatar_url)")
   .order("created_at", { ascending: false });
 
 // Créer une publication (l'utilisateur doit être authentifié)
@@ -259,7 +259,10 @@ await supabase.from("posts").insert({
 await supabase.from("pollinations").insert({ post_id, user_id: session.user!.id });
 
 // Requête complète du fil : voir POST_SELECT dans lib/posts.ts
-// author:profiles(...), stats:post_stats(...), parent:posts!posts_parent_id_fkey(...)
+// author:profiles!posts_author_id_fkey(...), stats:post_stats(...), parent:posts!posts_parent_id_fkey(...)
+// ⚠️ Depuis `posts`, toujours préciser `!posts_author_id_fkey` : sans ce suffixe, PostgREST
+// renvoie « more than one relationship was found for 'posts' and 'profiles' » (liens
+// indirects via pollinations, intentions, post_views, comments).
 ```
 
 Les types stricts (`Database`, `Tables<'posts'>`, etc.) sont disponibles depuis

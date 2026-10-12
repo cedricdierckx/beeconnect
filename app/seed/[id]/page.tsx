@@ -49,7 +49,7 @@ function SeedDetail() {
     const [{ data: b }, { data: ints }, { data: pols }] = await Promise.all([
       supabase
         .from("posts")
-        .select("id, title, content, image_url, location, created_at, author:profiles(username, avatar_url)")
+        .select("id, title, content, image_url, location, created_at, author:profiles!posts_author_id_fkey(username, avatar_url)")
         .eq("parent_id", id)
         .eq("kind", "bloom")
         .order("created_at", { ascending: false }),

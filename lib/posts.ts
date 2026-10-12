@@ -43,9 +43,9 @@ export const EMPTY_STATS: PostStats = {
 const AUTHOR = "id, username, full_name, avatar_url, location";
 
 export const POST_SELECT = `id, author_id, title, content, image_url, category, kind, parent_id, location, created_at,
-  author:profiles(${AUTHOR}),
+  author:profiles!posts_author_id_fkey(${AUTHOR}),
   stats:post_stats(views_count, pollinations_count, intentions_count, blooms_count, comments_count),
-  parent:posts!posts_parent_id_fkey(id, title, content, author:profiles(username))`;
+  parent:posts!posts_parent_id_fkey(id, title, content, author:profiles!posts_author_id_fkey(username))`;
 
 export const PAGE_SIZE = 10;
 
