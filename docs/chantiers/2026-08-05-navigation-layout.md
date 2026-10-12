@@ -1,6 +1,6 @@
 # Chantier : mise en page commune et navigation
 
-**Statut : Ouvert**
+**Statut : En cours** (agent : refonte EarthConnect — MVP complet, depuis : 2026-10-12)
 **Créé le : 2026-08-05**
 
 ## Périmètre
