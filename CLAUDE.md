@@ -2,7 +2,7 @@
 
 ## Branche
 
-Ne travailler **que sur `main`**. Ne jamais créer de branche de fonctionnalité, ne jamais
+Ne travailler **que sur `main`** (consigne permanente du propriétaire : « travaille toujours sur main »). Ne jamais créer de branche de fonctionnalité, ne jamais
 pousser ailleurs que sur `main`, ne jamais faire de force-push. Toujours
 `git pull --rebase origin main` avant de commencer à coder et juste avant de pousser.
 

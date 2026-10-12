@@ -59,9 +59,6 @@ export default function Home() {
 
         {/* Carte de démonstration */}
         <div className="relative mx-auto w-full max-w-md">
-          <span className="absolute -left-6 -top-8 animate-float text-6xl">🐝</span>
-          <span className="absolute -right-4 top-1/3 animate-float text-5xl [animation-delay:1.2s]">🌼</span>
-          <span className="absolute -bottom-6 left-10 animate-float text-4xl [animation-delay:2s]">🌿</span>
           <div className="card rotate-1 overflow-hidden">
             <div className="flex items-center gap-3 p-4">
               <span className="grid h-11 w-11 place-items-center rounded-full bg-honey-300 font-display font-bold">É</span>
@@ -92,6 +89,10 @@ export default function Home() {
               </div>
             </div>
           </div>
+          {/* Décors : posés par-dessus la carte (z-10), sinon la carte inclinée les recouvre */}
+          <span aria-hidden className="pointer-events-none absolute -left-4 -top-8 z-10 animate-float text-5xl drop-shadow-md">🐝</span>
+          <span aria-hidden className="pointer-events-none absolute -bottom-5 -right-2 z-10 animate-float text-5xl drop-shadow-md [animation-delay:1.2s]">🌼</span>
+          <span aria-hidden className="pointer-events-none absolute -bottom-6 left-24 z-10 animate-float text-4xl drop-shadow-md [animation-delay:2s]">🌿</span>
         </div>
       </section>
 
