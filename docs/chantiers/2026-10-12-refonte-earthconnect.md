@@ -60,5 +60,6 @@ MVP déployé sur Vercel depuis `main`, `npx tsc --noEmit` et `next build` passe
 - Notifications (« ta graine a fleuri chez @x »).
 - Comptes « organisation / commune » avec tableau de bord filtré sur leur territoire.
 - Modération (signalement) et estimation chiffrée de l'impact environnemental.
-- Réglage Supabase Auth → URL Configuration : Site URL = domaine de production Vercel
-  (sinon les liens de confirmation d'e-mail pointent vers `localhost`).
+- ~~Réglage Supabase Auth → URL Configuration~~ et ~~modèles d'e-mails~~ : faits par
+  l'utilisateur le 2026-10-12 (voir `supabase/templates/README.md`).
+- SMTP personnalisé (expéditeur « EarthConnect », quotas d'envoi) : à décider.
