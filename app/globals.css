@@ -64,3 +64,36 @@ h4 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Documents légaux (/legal/*) */
+@layer components {
+  .legal h2 {
+    @apply mb-2 mt-8 text-xl font-bold text-leaf-800;
+  }
+  .legal h3 {
+    @apply mb-1 mt-5 font-display font-semibold text-leaf-800;
+  }
+  .legal p,
+  .legal li {
+    @apply leading-relaxed text-leaf-900/80;
+  }
+  .legal p {
+    @apply mb-3;
+  }
+  .legal ul {
+    @apply mb-3 list-disc space-y-1 pl-6;
+  }
+  .legal a {
+    @apply font-semibold text-leaf-700 underline;
+  }
+  .legal table {
+    @apply mb-4 w-full border-collapse text-sm;
+  }
+  .legal th,
+  .legal td {
+    @apply border border-leaf-900/10 px-3 py-2 text-left align-top;
+  }
+  .legal th {
+    @apply bg-leaf-50 font-display font-semibold text-leaf-800;
+  }
+}

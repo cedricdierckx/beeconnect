@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           author_id: string
@@ -372,6 +419,85 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          comment_id: string | null
+          created_at: string
+          details: string | null
+          id: string
+          post_id: string | null
+          profile_id: string | null
+          reason: string
+          reporter_id: string
+          status: string
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          post_id?: string | null
+          profile_id?: string | null
+          reason: string
+          reporter_id: string
+          status?: string
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          post_id?: string | null
+          profile_id?: string | null
+          reason?: string
+          reporter_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "reports_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       category_stats: {
@@ -440,7 +566,7 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      delete_my_account: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
