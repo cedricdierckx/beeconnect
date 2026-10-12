@@ -68,7 +68,12 @@ function LoginForm() {
           <input id="email" type="email" required autoComplete="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div>
-          <label className="label" htmlFor="password">Mot de passe</label>
+          <div className="flex items-baseline justify-between">
+            <label className="label" htmlFor="password">Mot de passe</label>
+            <Link href="/reset" className="text-sm font-semibold text-leaf-700 hover:underline">
+              Oublié ?
+            </Link>
+          </div>
           <input id="password" type="password" required autoComplete="current-password" className="input" value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         {error && <p className="rounded-2xl bg-petal-100 px-4 py-3 text-sm font-semibold text-petal-500">{error}</p>}

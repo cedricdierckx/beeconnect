@@ -223,7 +223,10 @@ ne peut pas s'abonner à lui-même.
   - Site URL : `https://beeconnect-eight.vercel.app`
   - Redirect URLs : `https://beeconnect-eight.vercel.app/**`, `http://localhost:3000/**`
 - Ces réglages ne sont **pas** modifiables via le MCP Supabase (console uniquement).
-- Un lien d'e-mail déjà utilisé (ou pré-ouvert par un antivirus de messagerie) renvoie
+- Modèles d'e-mails aux couleurs d'EarthConnect : `supabase/templates/` (voir son
+  `README.md` pour l'installation dans la console). Leurs liens mènent à `/auth/confirm`
+  (vérification `verifyOtp` au clic), `/reset` et `/reset/update` gèrent le mot de passe oublié.
+- Un lien d'e-mail au format par défaut de Supabase déjà utilisé (ou pré-ouvert par un antivirus) renvoie
   `#error=access_denied&error_code=otp_expired` : géré par `app/components/AuthLinkHandler.tsx`
   (message + redirection vers `/login?lien=expire`, avec bouton « Renvoyer l'e-mail »).
 

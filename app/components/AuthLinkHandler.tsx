@@ -33,6 +33,11 @@ export default function AuthLinkHandler() {
       const type = params.get("type");
       // Laisse supabase-js lire le jeton avant de nettoyer l'URL.
       setTimeout(clean, 500);
+      if (type === "recovery" || type === "invite") {
+        toast("Lien vérifié : choisis ton mot de passe", "🔑");
+        router.push("/reset/update");
+        return;
+      }
       toast(type === "signup" ? "Adresse confirmée, bienvenue dans le jardin !" : "Te voilà connecté !", "🌸");
       if (window.location.pathname === "/") router.push("/feed");
     }

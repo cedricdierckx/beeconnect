@@ -44,6 +44,13 @@ export async function resendConfirmation(email: string) {
   });
 }
 
+/** Envoie l'e-mail « mot de passe oublié » (modèle supabase/templates/recovery.html). */
+export async function requestPasswordReset(email: string) {
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: typeof window !== "undefined" ? `${window.location.origin}/reset/update` : undefined,
+  });
+}
+
 export async function signIn(email: string, password: string) {
   return supabase.auth.signInWithPassword({ email, password });
 }
