@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -374,10 +374,30 @@ export type Database = {
       }
     }
     Views: {
+      category_stats: {
+        Row: {
+          blooms_count: number | null
+          category: string | null
+          pollinations_count: number | null
+          seeds_count: number | null
+        }
+        Relationships: []
+      }
       ecosystem_stats: {
         Row: {
           blooms_count: number | null
           location: string | null
+          members_count: number | null
+          pollinations_count: number | null
+          seeds_count: number | null
+          views_count: number | null
+        }
+        Relationships: []
+      }
+      global_stats: {
+        Row: {
+          blooms_count: number | null
+          intentions_count: number | null
           members_count: number | null
           pollinations_count: number | null
           seeds_count: number | null
