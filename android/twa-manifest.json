@@ -1,0 +1,36 @@
+{
+  "packageId": "be.earthconnect.app",
+  "host": "beeconnect-eight.vercel.app",
+  "name": "EarthConnect",
+  "launcherName": "EarthConnect",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#2F9E5B",
+  "themeColorDark": "#1B5E37",
+  "navigationColor": "#FFFFFF",
+  "navigationColorDark": "#0D2A1A",
+  "navigationDividerColor": "#FFFFFF",
+  "navigationDividerColorDark": "#0D2A1A",
+  "backgroundColor": "#FFF9EC",
+  "enableNotifications": false,
+  "startUrl": "/feed",
+  "iconUrl": "https://beeconnect-eight.vercel.app/icons/icon-512.png",
+  "maskableIconUrl": "https://beeconnect-eight.vercel.app/icons/maskable-512.png",
+  "webManifestUrl": "https://beeconnect-eight.vercel.app/manifest.webmanifest",
+  "splashScreenFadeOutDuration": 300,
+  "fallbackType": "customtabs",
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "minSdkVersion": 21,
+  "signingKey": {
+    "path": "./earthconnect-upload.keystore",
+    "alias": "earthconnect"
+  },
+  "shortcuts": [
+    { "name": "Planter une graine", "shortName": "Planter", "url": "/new", "chosenIconUrl": "https://beeconnect-eight.vercel.app/icons/icon-192.png" },
+    { "name": "Tableau d'impact", "shortName": "Impact", "url": "/impact", "chosenIconUrl": "https://beeconnect-eight.vercel.app/icons/icon-192.png" }
+  ],
+  "generatorApp": "bubblewrap-cli"
+}

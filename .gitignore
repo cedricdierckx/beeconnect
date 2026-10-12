@@ -7,3 +7,8 @@ out
 *.log
 *.tsbuildinfo
 next-env.d.ts
+
+# Clés de signature Android
+*.keystore
+*.jks
+android/**/build/

@@ -1,6 +1,6 @@
 # Chantier : préparation à la publication sur le Google Play Store
 
-**Statut : En cours** (agent : préparation Play Store, depuis : 2026-10-12)
+**Statut : Bloqué** (raison : informations et actions réservées à l'éditeur — identité légale dans `lib/legal.ts`, fonction SQL `delete_my_account` à coller dans la console Supabase, compte développeur Google Play, choix du domaine et de l'identifiant de paquet ; détail dans `docs/play-store/README.md` §1)
 **Créé le : 2026-10-12**
 
 ## Périmètre
@@ -26,3 +26,14 @@ RGPD, loi belge du 30 juillet 2018, Code de droit économique (livre XII), DSA.
 
 Tout ce qui ne dépend pas de l'utilisateur est prêt ; la liste de ce qui reste à fournir
 (identité de l'éditeur, compte développeur, clé de signature, domaine) est documentée.
+
+## Avancement (2026-10-12)
+
+Fait : pages légales, signalement, blocage, export et suppression de compte, consentement à
+l'inscription, suppression des métadonnées photo, PWA (manifeste, icônes, service worker,
+hors-ligne), Digital Asset Links, configuration Bubblewrap, dossier `docs/play-store/`
+(guide, fiche, sécurité des données, visuels). Tables `reports` et `blocks` appliquées.
+
+Reste (éditeur) : voir `docs/play-store/README.md`, section « À fournir ou décider ».
+Une fois l'empreinte SHA-256 connue, un agent disposant du MCP Vercel peut créer la variable
+`ANDROID_SHA256_CERT_FINGERPRINTS` (outil `create_project_env`).

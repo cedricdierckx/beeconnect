@@ -46,7 +46,9 @@ auth.users (géré par Supabase Auth)
          │      ├── pollinations (post_id → posts.id, user_id → profiles.id)
          │      ├── intentions (post_id → posts.id, user_id → profiles.id, bloom_post_id → posts.id)
          │      └── post_views (post_id → posts.id, viewer_id → profiles.id)
-         └── follows (follower_id → profiles.id, following_id → profiles.id)
+         ├── follows (follower_id → profiles.id, following_id → profiles.id)
+         ├── blocks (blocker_id → profiles.id, blocked_id → profiles.id)
+         └── reports (reporter_id → profiles.id ; cible : post_id | comment_id | profile_id)
 
 Vues (lecture seule) : profile_stats, ecosystem_stats, category_stats, global_stats
 ```
@@ -191,6 +193,34 @@ ne peut pas s'abonner à lui-même.
 - `INSERT` : `auth.uid() = follower_id`.
 - `DELETE` : `auth.uid() = follower_id`.
 
+### `reports` (signalements — DSA art. 16, exigence Google Play)
+
+| Colonne | Type | Contraintes |
+| --- | --- | --- |
+| `id` | `uuid` | PK |
+| `reporter_id` | `uuid` | FK → `profiles.id` (`cascade`), NOT NULL |
+| `post_id` / `comment_id` / `profile_id` | `uuid` | FK (`cascade`) ; **exactement une** cible renseignée (`reports_one_target`) |
+| `reason` | `text` | `spam`, `harcelement`, `haine`, `violence`, `sexuel`, `illegal`, `desinformation`, `vie_privee`, `autre` |
+| `details` | `text` | facultatif, ≤ 1000 caractères |
+| `status` | `text` | `open` (défaut), `reviewed`, `actioned`, `dismissed` |
+| `created_at` | `timestamptz` | défaut `now()` |
+
+**RLS** : `INSERT` et `SELECT` limités à `auth.uid() = reporter_id`. Aucun rôle modérateur
+dans l'appli : l'éditeur traite les signalements dans la console Supabase (Table Editor,
+filtre `status = open`) et met à jour `status`. Conservation : 12 mois maximum après
+traitement (engagement de la politique de confidentialité — purge manuelle à ce stade).
+
+### `blocks` (membres bloqués)
+
+| Colonne | Type | Contraintes |
+| --- | --- | --- |
+| `blocker_id` | `uuid` | FK → `profiles.id` (`cascade`), PK composite |
+| `blocked_id` | `uuid` | FK → `profiles.id` (`cascade`), PK composite ; `blocks_no_self_block` |
+| `created_at` | `timestamptz` | défaut `now()` |
+
+**RLS** : `SELECT` / `INSERT` / `DELETE` limités à `auth.uid() = blocker_id` (liste privée).
+Le masquage des contenus bloqués est fait côté appli (`useAuth().blocked`).
+
 ## Fonctions et déclencheurs
 
 - `public.set_updated_at()` : déclencheur générique (`before update`) qui met à jour la
@@ -204,6 +234,14 @@ ne peut pas s'abonner à lui-même.
 - `public.create_post_stats()`, `public.bump_post_stat(<colonne>)`, `public.handle_bloom()` :
   `security definer`, maintiennent `post_stats` (et l'intention liée à une floraison).
   `execute` révoqué pour `anon`/`authenticated` : jamais appelées depuis l'application.
+
+- `public.delete_my_account()` : `security definer`, exécutable par `authenticated` uniquement.
+  Supprime la ligne `auth.users` de l'appelant ; la cascade efface toutes ses données. Les
+  fichiers Storage sont supprimés **avant** par l'appli (`lib/account.ts`, API Storage).
+  ⚠️ Migration `20261012120100_earthconnect_delete_my_account.sql` **à appliquer via
+  Supabase → SQL Editor** : le connecteur MCP n'aboutit pas (instruction visant
+  `auth.users`, confirmation interactive requise). Tant qu'elle manque, la suppression de
+  compte affiche un message invitant à écrire à l'adresse de contact.
 
 ## Vues (lecture seule, `security_invoker = on`)
 

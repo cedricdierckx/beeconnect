@@ -29,7 +29,10 @@ voir `lib/earth.ts`).
 | `/seed/[id]` | Détail, chaîne d'impact, floraisons, commentaires |
 | `/profile/[username]`, `/profile/edit` | Profil, statut de pollinisateur, graines/floraisons/en germination |
 | `/impact` | Tableau d'impact : totaux, écosystèmes locaux, catégories, prairies, grands pollinisateurs |
-| `/login`, `/signup` | Authentification Supabase (e-mail + mot de passe) |
+| `/login`, `/signup` | Authentification Supabase (e-mail + mot de passe), âge minimum et acceptation des conditions |
+| `/reset`, `/reset/update`, `/auth/confirm` | Mot de passe oublié, atterrissage des liens d'e-mail |
+| `/settings` | Export des données, membres bloqués, suppression du compte |
+| `/legal/*` | Conditions, confidentialité, mentions légales, suppression de compte (données éditeur : `lib/legal.ts`) |
 | `/api/health` | Diagnostic des requêtes Supabase (ok / erreur, aucune donnée) |
 
 ## Stack
@@ -54,6 +57,11 @@ types générés dans `lib/supabase/database.types.ts`.
 3. `npm run dev`
 
 Avant de pousser : `npx tsc --noEmit` et `npm run lint`.
+
+## Application Android (Google Play)
+
+PWA installable publiée en Trusted Web Activity : voir [`docs/play-store/README.md`](docs/play-store/README.md)
+(état des lieux, guide de publication, textes de la fiche, sécurité des données).
 
 ## Travail à plusieurs agents
 
