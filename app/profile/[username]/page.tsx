@@ -109,7 +109,7 @@ export default function ProfilePage() {
           <span className="absolute right-1/4 top-10 text-2xl">🌿</span>
         </div>
         <div className="px-6 pb-6">
-          <div className="-mt-12 flex flex-wrap items-end justify-between gap-3">
+          <div className="relative z-10 -mt-12 flex flex-wrap items-end justify-between gap-3">
             <Avatar url={profile.avatar_url} name={profile.username} size={104} className="ring-4" />
             <div className="flex gap-2">
               {isMe ? (
