@@ -11,6 +11,8 @@ import type { Tables } from "@/lib/supabase/database.types";
 import { useAuth } from "../../components/AuthProvider";
 import Avatar from "../../components/Avatar";
 import FollowButton from "../../components/FollowButton";
+import BlockButton from "../../components/BlockButton";
+import ReportButton from "../../components/ReportButton";
 import LevelBadge from "../../components/LevelBadge";
 import PostList from "../../components/PostList";
 import EmptyState from "../../components/EmptyState";
@@ -111,22 +113,29 @@ export default function ProfilePage() {
         <div className="px-6 pb-6">
           <div className="relative z-10 -mt-12 flex flex-wrap items-end justify-between gap-3">
             <Avatar url={profile.avatar_url} name={profile.username} size={104} className="ring-4" />
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               {isMe ? (
                 <>
                   <Link href="/profile/edit" className="btn-ghost">✏️ Modifier</Link>
+                  <Link href="/settings" className="btn-ghost" aria-label="Paramètres">
+                    ⚙️<span className="hidden sm:inline">Paramètres</span>
+                  </Link>
                   <button
                     onClick={async () => {
                       await signOut();
                       router.push("/");
                     }}
-                    className="btn-ghost"
+                    className="btn-ghost hidden sm:inline-flex"
                   >
                     Déconnexion
                   </button>
                 </>
               ) : (
-                <FollowButton profileId={profile.id} onChange={() => loadCounts(profile.id)} />
+                <>
+                  <FollowButton profileId={profile.id} onChange={() => loadCounts(profile.id)} />
+                  <BlockButton profileId={profile.id} username={profile.username} />
+                  <ReportButton target={{ profileId: profile.id }} />
+                </>
               )}
             </div>
           </div>

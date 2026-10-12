@@ -16,7 +16,8 @@ export default function PostList({
   posts: FeedPost[];
   pollinatedBy?: Map<string, string>;
 }) {
-  const { user } = useAuth();
+  const { user, blocked } = useAuth();
+  const visible = posts.filter((p) => !blocked.has(p.author_id));
   const [viewer, setViewer] = useState<ViewerState>({ pollinated: new Set(), launched: new Map() });
   const ids = posts.map((p) => p.id).join(",");
 
@@ -28,7 +29,7 @@ export default function PostList({
 
   return (
     <div className="space-y-5">
-      {posts.map((p, i) => (
+      {visible.map((p, i) => (
         <PostCard
           key={p.id}
           post={p}

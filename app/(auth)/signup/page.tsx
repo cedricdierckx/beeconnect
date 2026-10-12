@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authErrorMessage, isUsernameAvailable, normalizeUsername, signUp } from "@/lib/supabase/auth";
 import AuthCard from "../AuthCard";
+import { LEGAL } from "@/lib/legal";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -15,9 +16,11 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!accepted) return setError("Coche la case pour confirmer ton âge et accepter les conditions.");
     const handle = normalizeUsername(username);
     if (handle.length < 3 || handle.length > 24)
       return setError("Ton pseudo doit faire entre 3 et 24 caractères (lettres, chiffres, « _ » ou « . »).");
@@ -89,6 +92,26 @@ export default function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        <label className="flex cursor-pointer items-start gap-3 rounded-2xl bg-leaf-50 p-3 text-sm text-leaf-900/80">
+          <input
+            type="checkbox"
+            checked={accepted}
+            onChange={(e) => setAccepted(e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-leaf-500"
+            required
+          />
+          <span>
+            J&apos;ai au moins {LEGAL.minAge} ans et j&apos;accepte les{" "}
+            <Link href="/legal/conditions" target="_blank" className="font-semibold text-leaf-700 underline">
+              conditions d&apos;utilisation
+            </Link>{" "}
+            et la{" "}
+            <Link href="/legal/confidentialite" target="_blank" className="font-semibold text-leaf-700 underline">
+              politique de confidentialité
+            </Link>
+            .
+          </span>
+        </label>
         {error && <p className="rounded-2xl bg-petal-100 px-4 py-3 text-sm font-semibold text-petal-500">{error}</p>}
         <button type="submit" disabled={busy} className="btn-honey w-full py-3.5 text-lg">
           {busy ? "Germination…" : "🐝 Créer mon compte"}

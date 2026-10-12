@@ -7,6 +7,8 @@ import CategoryChip from "./CategoryChip";
 import ImpactStats from "./ImpactStats";
 import PollinateButton from "./PollinateButton";
 import LaunchButton from "./LaunchButton";
+import ReportButton from "./ReportButton";
+import { useAuth } from "./AuthProvider";
 import { EMPTY_STATS, type FeedPost } from "@/lib/posts";
 import { timeAgo } from "@/lib/earth";
 
@@ -27,6 +29,7 @@ export default function PostCard({
   pollinatedBy?: string | null;
   showTip?: boolean;
 }) {
+  const { user } = useAuth();
   const stats = post.stats ?? EMPTY_STATS;
   const isBloom = post.kind === "bloom";
   const name = post.author?.username ?? "pollinisateur";
@@ -66,6 +69,7 @@ export default function PostCard({
         >
           {isBloom ? "🌸 Floraison" : "🌱 Graine"}
         </span>
+        {user?.id !== post.author_id && <ReportButton target={{ postId: post.id }} />}
       </div>
 
       <Link href={`/seed/${post.id}`} className="block px-5 pt-3">

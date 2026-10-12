@@ -1,4 +1,5 @@
 import { supabase } from "./client";
+import { LEGAL } from "../legal";
 
 /** Traduit les erreurs Supabase Auth les plus courantes en messages lisibles. */
 export function authErrorMessage(message: string): string {
@@ -26,7 +27,13 @@ export async function signUp(params: {
     email: params.email,
     password: params.password,
     options: {
-      data: { username: params.username, full_name: params.fullName || null },
+      data: {
+        username: params.username,
+        full_name: params.fullName || null,
+        // Preuve de l'acceptation des conditions et de l'âge minimum (RGPD art. 7.1).
+        terms_version: LEGAL.termsVersion,
+        terms_accepted_at: new Date().toISOString(),
+      },
       emailRedirectTo:
         typeof window !== "undefined" ? `${window.location.origin}/feed` : undefined,
     },

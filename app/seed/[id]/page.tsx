@@ -17,6 +17,7 @@ import LaunchButton from "../../components/LaunchButton";
 import CommentList from "../../components/CommentList";
 import Celebration from "../../components/Celebration";
 import EmptyState from "../../components/EmptyState";
+import ReportButton from "../../components/ReportButton";
 
 type MiniProfile = { username: string | null; avatar_url: string | null };
 type Bloom = { id: string; title: string | null; content: string; image_url: string | null; location: string | null; created_at: string; author: MiniProfile | null };
@@ -34,7 +35,7 @@ function SeedDetail() {
   const params = useSearchParams();
   const router = useRouter();
   const toast = useToast();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, blocked } = useAuth();
 
   const [post, setPost] = useState<FeedPost | null | undefined>(undefined);
   const [blooms, setBlooms] = useState<Bloom[]>([]);
@@ -121,6 +122,16 @@ function SeedDetail() {
     );
   }
 
+  if (blocked.has(post.author_id)) {
+    return (
+      <EmptyState emoji="🚫" title="Tu as bloqué ce membre" text="Ses publications sont masquées pour toi.">
+        <Link href="/settings" className="btn-ghost">
+          Gérer mes blocages
+        </Link>
+      </EmptyState>
+    );
+  }
+
   const stats = post.stats ?? EMPTY_STATS;
   const isBloom = post.kind === "bloom";
   const cat = getCategory(post.category);
@@ -185,10 +196,12 @@ function SeedDetail() {
             <button onClick={share} className="btn-ghost">
               🔗 Partager
             </button>
-            {isMine && (
+            {isMine ? (
               <button onClick={remove} className="ml-auto text-sm font-semibold text-leaf-900/40 hover:text-petal-500">
                 Supprimer
               </button>
+            ) : (
+              <ReportButton target={{ postId: post.id }} label="Signaler" className="ml-auto" />
             )}
           </div>
         </div>

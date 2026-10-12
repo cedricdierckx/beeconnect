@@ -7,6 +7,7 @@ import { timeAgo } from "@/lib/earth";
 import Avatar from "./Avatar";
 import CommentForm from "./CommentForm";
 import { useAuth } from "./AuthProvider";
+import ReportButton from "./ReportButton";
 
 type CommentRow = {
   id: string;
@@ -18,7 +19,7 @@ type CommentRow = {
 
 /** Liste les commentaires d'une publication (avec formulaire d'ajout). Props : `postId`. */
 export default function CommentList({ postId }: { postId: string }) {
-  const { user } = useAuth();
+  const { user, blocked } = useAuth();
   const [comments, setComments] = useState<CommentRow[]>([]);
 
   const load = useCallback(async () => {
@@ -42,7 +43,7 @@ export default function CommentList({ postId }: { postId: string }) {
   return (
     <div className="space-y-4">
       {comments.length === 0 && <p className="text-center text-leaf-900/50">Pas encore de commentaire. Lance la conversation ! 💬</p>}
-      {comments.map((c) => (
+      {comments.filter((c) => !blocked.has(c.author_id)).map((c) => (
         <div key={c.id} className="flex gap-3">
           <Link href={`/profile/${c.author?.username ?? ""}`}>
             <Avatar url={c.author?.avatar_url} name={c.author?.username} size={38} />
@@ -53,10 +54,12 @@ export default function CommentList({ postId }: { postId: string }) {
                 @{c.author?.username ?? "pollinisateur"}
               </Link>
               <span className="text-xs text-leaf-900/40">{timeAgo(c.created_at)}</span>
-              {user?.id === c.author_id && (
+              {user?.id === c.author_id ? (
                 <button onClick={() => remove(c.id)} className="ml-auto text-xs text-leaf-900/40 hover:text-petal-500">
                   Supprimer
                 </button>
+              ) : (
+                <ReportButton target={{ commentId: c.id }} className="ml-auto -my-1" />
               )}
             </div>
             <p className="whitespace-pre-line text-leaf-900/80">{c.content}</p>

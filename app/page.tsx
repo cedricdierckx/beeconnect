@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LEVELS } from "@/lib/earth";
+import { LEGAL_PAGES } from "@/lib/legal";
 
 const STEPS = [
   { emoji: "🌱", title: "Une graine est plantée", text: "Une école partage la photo de son nouvel hôtel à insectes, construit avec les élèves." },
@@ -206,6 +207,14 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <nav className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-leaf-800/60 sm:hidden">
+        {LEGAL_PAGES.map((p) => (
+          <Link key={p.href} href={p.href} className="underline">
+            {p.label}
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
