@@ -1,6 +1,7 @@
 # Chantier : inscription, connexion, déconnexion
 
-**Statut : En cours** (agent : refonte EarthConnect — MVP complet, depuis : 2026-10-12)
+**Statut : Clôturé**
+**Clôturé le : 2026-10-12**
 **Créé le : 2026-08-05**
 
 ## Périmètre
@@ -32,3 +33,8 @@ insérer manuellement dans `profiles`, seulement à appeler `supabase.auth.signU
 
 Un utilisateur peut s'inscrire, se connecter et se déconnecter ; une ligne apparaît dans
 `profiles` après inscription. `npx tsc --noEmit` passe.
+
+## Résolution
+
+Réalisé dans le cadre du chantier `2026-10-12-refonte-earthconnect.md` (renommage en
+EarthConnect, « J'aime » remplacé par « Polliniser »). Voir ce fichier pour le détail.

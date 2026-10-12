@@ -1,12 +1,21 @@
-# Base de données BeeConnect (Supabase)
+# Base de données EarthConnect (Supabase)
 
 Ce document décrit l'état réel de la base de données Supabase du projet, afin que tout
 agent ou développeur puisse coder contre ce schéma **sans avoir accès à la console
 Supabase**. Il fait foi tant qu'il n'a pas été mis à jour en même temps qu'une nouvelle
 migration dans `supabase/migrations/`.
 
-Dernière vérification en direct sur le projet : 2026-08-04. Statut : schéma appliqué,
-0 avertissement de sécurité (`get_advisors`), RLS activée sur toutes les tables `public`.
+Dernière vérification en direct sur le projet : 2026-10-12. Statut : schéma appliqué
+(migrations EarthConnect incluses), 0 avertissement de sécurité (`get_advisors`), RLS
+activée sur toutes les tables `public`, vues en `security_invoker`.
+
+> Le produit s'appelle désormais **EarthConnect**. Les noms d'infrastructure restent
+> ceux d'origine : projet Supabase `BeeConnect Project`, projet Vercel `beeconnect`,
+> dépôt GitHub `beeconnect`.
+>
+> Le projet Supabase (offre gratuite) se met en pause après une période d'inactivité :
+> si l'application ne charge plus aucune donnée, vérifier son statut (`get_project`) et
+> le relancer (`restore_project`).
 
 - Projet Supabase : `BeeConnect Project` (réf. `jcmcpkssjobqkmdopnhj`, région `eu-west-3`)
 - Source de vérité versionnée : `supabase/migrations/*.sql`
@@ -31,10 +40,15 @@ accès qu'aux opérations autorisées par les politiques RLS ci-dessous. Aucune 
 ```
 auth.users (géré par Supabase Auth)
    └── profiles (id = auth.users.id)
-         ├── posts (author_id → profiles.id)
+         ├── posts (author_id → profiles.id ; parent_id → posts.id pour une floraison)
+         │      ├── post_stats (post_id → posts.id, 1-1, compteurs maintenus par déclencheurs)
          │      ├── comments (post_id → posts.id, author_id → profiles.id)
-         │      └── likes (post_id → posts.id, user_id → profiles.id)
+         │      ├── pollinations (post_id → posts.id, user_id → profiles.id)
+         │      ├── intentions (post_id → posts.id, user_id → profiles.id, bloom_post_id → posts.id)
+         │      └── post_views (post_id → posts.id, viewer_id → profiles.id)
          └── follows (follower_id → profiles.id, following_id → profiles.id)
+
+Vues (lecture seule) : profile_stats, ecosystem_stats, category_stats, global_stats
 ```
 
 Un profil est créé **automatiquement** à l'inscription d'un utilisateur via un
@@ -66,19 +80,28 @@ Profil public de chaque utilisateur.
 
 ### `posts`
 
-Publications des utilisateurs.
+Publications : une **graine** (`kind = 'seed'`, action originale partagée) ou une
+**floraison** (`kind = 'bloom'`, reproduction confirmée d'une graine, `parent_id` renseigné).
 
 | Colonne | Type | Contraintes | Description |
 | --- | --- | --- | --- |
 | `id` | `uuid` | PK, défaut `gen_random_uuid()` | |
 | `author_id` | `uuid` | FK → `profiles.id` (`on delete cascade`), NOT NULL | |
+| `title` | `text` | nullable, 1 à 120 caractères | Titre court de l'action |
 | `content` | `text` | NOT NULL, `check (char_length(content) > 0)` | Texte de la publication |
 | `image_url` | `text` | nullable | URL publique dans le bucket `post-images` |
-| `category` | `text` | nullable | Tag libre (ex. thématique écologique) ; pas d'énumération contrainte à ce stade |
+| `category` | `text` | nullable | Identifiant libre ; l'appli utilise la liste `CATEGORIES` de `lib/earth.ts` (`biodiversite`, `potager`, `compost`, `eau`, `nettoyage`, `mobilite`, `dechets`, `energie`, `arbres`, `autre`) |
+| `kind` | `text` | NOT NULL, défaut `'seed'`, `check in ('seed','bloom')` | Graine ou floraison |
+| `parent_id` | `uuid` | nullable, FK → `posts.id` (`on delete set null`) | Pour une floraison : la graine d'origine. Jointure PostgREST : `parent:posts!posts_parent_id_fkey(...)` |
+| `location` | `text` | nullable | Commune/quartier (écosystème local) |
 | `created_at` | `timestamptz` | défaut `now()` | |
 | `updated_at` | `timestamptz` | défaut `now()`, maintenu par déclencheur | |
 
-Index : `posts_author_id_idx`, `posts_created_at_idx` (desc, utile pour un fil chronologique).
+Index : `posts_author_id_idx`, `posts_created_at_idx` (desc), `posts_parent_id_idx`, `posts_category_idx`.
+
+À chaque insertion, une ligne `post_stats` est créée (déclencheur `on_post_created_stats`).
+Une floraison incrémente `blooms_count` de sa graine et crée/complète automatiquement
+l'intention correspondante (déclencheur `posts_bloom_stats`).
 
 **RLS** : activée.
 - `SELECT` : public.
@@ -100,9 +123,10 @@ Index : `comments_post_id_idx`, `comments_author_id_idx`.
 
 **RLS** : activée — mêmes règles que `posts` (lecture publique, écriture réservée à l'auteur).
 
-### `likes`
+### `pollinations` (ex-`likes`)
 
-Table de liaison (pas d'`id` propre, clé composite).
+« Polliniser » remplace le « J'aime » : « cette idée est utile, elle mérite de voyager ».
+La table `likes` d'origine a été **renommée** (colonnes, clé et politiques conservées).
 
 | Colonne | Type | Contraintes |
 | --- | --- | --- |
@@ -110,12 +134,46 @@ Table de liaison (pas d'`id` propre, clé composite).
 | `user_id` | `uuid` | FK → `profiles.id` (`on delete cascade`), PK (composite) |
 | `created_at` | `timestamptz` | défaut `now()` |
 
-Un utilisateur ne peut liker deux fois la même publication (contrainte de clé primaire).
+**RLS** : `SELECT` public ; `INSERT` / `DELETE` : `auth.uid() = user_id`.
+Pour éviter une erreur de doublon : `upsert(..., { onConflict: "post_id,user_id", ignoreDuplicates: true })`.
 
-**RLS** : activée.
-- `SELECT` : public.
-- `INSERT` : `auth.uid() = user_id`.
-- `DELETE` : `auth.uid() = user_id` (retirer son propre like).
+### `intentions` (« Je me lance »)
+
+| Colonne | Type | Contraintes | Description |
+| --- | --- | --- | --- |
+| `post_id` | `uuid` | FK → `posts.id` (`cascade`), PK composite | Graine que l'utilisateur veut reproduire |
+| `user_id` | `uuid` | FK → `profiles.id` (`cascade`), PK composite | |
+| `bloom_post_id` | `uuid` | nullable, FK → `posts.id` (`set null`) | Floraison publiée ; `null` = « en germination » |
+| `created_at` | `timestamptz` | défaut `now()` | |
+
+**RLS** : `SELECT` public ; `INSERT` / `UPDATE` / `DELETE` : `auth.uid() = user_id`.
+`bloom_post_id` est renseigné automatiquement à la publication de la floraison.
+
+### `post_views` (« personnes touchées »)
+
+| Colonne | Type | Contraintes |
+| --- | --- | --- |
+| `post_id` | `uuid` | FK → `posts.id` (`cascade`), PK composite |
+| `viewer_id` | `uuid` | FK → `profiles.id` (`cascade`), PK composite |
+| `created_at` | `timestamptz` | défaut `now()` |
+
+Une vue par personne authentifiée et par publication. **RLS** : `INSERT` et `SELECT`
+limités à `auth.uid() = viewer_id` (qui a vu quoi n'est pas public ; seuls les compteurs
+de `post_stats` le sont). Les visiteurs anonymes ne sont pas comptés.
+
+### `post_stats` (compteurs d'impact)
+
+| Colonne | Type | Description |
+| --- | --- | --- |
+| `post_id` | `uuid` PK, FK → `posts.id` (`cascade`) | Relation 1-1 : `stats:post_stats(...)` |
+| `views_count` | `int` | Personnes touchées |
+| `pollinations_count` | `int` | Pollinisations |
+| `intentions_count` | `int` | « Je me lance » (y compris ceux qui ont fleuri) |
+| `blooms_count` | `int` | Floraisons (réalisations confirmées) |
+| `comments_count` | `int` | Commentaires |
+
+**RLS** : `SELECT` public, **aucune** politique d'écriture : seuls les déclencheurs
+`security definer` (`bump_post_stat`, `handle_bloom`, `create_post_stats`) la modifient.
 
 ### `follows`
 
@@ -142,6 +200,19 @@ ne peut pas s'abonner à lui-même.
   en reprenant `username`, `full_name`, `avatar_url` depuis `raw_user_meta_data` si fournis
   lors du `signUp()`. **Non exposée via l'API REST/RPC** (`execute` révoqué pour `anon` et
   `authenticated`) : elle ne doit jamais être appelée directement depuis le code applicatif.
+
+- `public.create_post_stats()`, `public.bump_post_stat(<colonne>)`, `public.handle_bloom()` :
+  `security definer`, maintiennent `post_stats` (et l'intention liée à une floraison).
+  `execute` révoqué pour `anon`/`authenticated` : jamais appelées depuis l'application.
+
+## Vues (lecture seule, `security_invoker = on`)
+
+| Vue | Contenu |
+| --- | --- |
+| `profile_stats` | Par profil (`profile_id`) : `seeds_count`, `blooms_count`, `pollinations_given`, `intentions_count`, `blooms_inspired` (floraisons d'autres membres issues de ses graines), `followers_count`, `following_count`. Sert au statut (voir `levelFor`/`pollenPoints` dans `lib/earth.ts`). Pas de relation PostgREST vers `profiles` : faire une 2ᵉ requête `profiles.in("id", ids)`. |
+| `ecosystem_stats` | Par localité (`initcap(trim(location))`) : graines, floraisons, pollinisations, vues, membres |
+| `category_stats` | Par catégorie : graines, floraisons, pollinisations |
+| `global_stats` | Une ligne : totaux de la plateforme |
 
 ## Stockage (Storage)
 
@@ -179,11 +250,16 @@ const { data: posts } = await supabase
 const { data: session } = await supabase.auth.getUser();
 await supabase.from("posts").insert({
   author_id: session.user!.id,
-  content: "Mon expérience zéro déchet du jour 🐝",
+  title: "Hôtel à insectes",
+  content: "Construit avec les élèves 🐝",
+  category: "biodiversite",
 });
 
-// Liker une publication
-await supabase.from("likes").insert({ post_id, user_id: session.user!.id });
+// Polliniser une publication
+await supabase.from("pollinations").insert({ post_id, user_id: session.user!.id });
+
+// Requête complète du fil : voir POST_SELECT dans lib/posts.ts
+// author:profiles(...), stats:post_stats(...), parent:posts!posts_parent_id_fkey(...)
 ```
 
 Les types stricts (`Database`, `Tables<'posts'>`, etc.) sont disponibles depuis
@@ -191,10 +267,17 @@ Les types stricts (`Database`, `Tables<'posts'>`, etc.) sont disponibles depuis
 
 ## Ce qui n'existe pas (volontairement, à ce stade)
 
-- Pas de notifications, messagerie privée, ni système de badges/gamification.
-- Pas de modération (signalement de contenu) ni de rôles (admin/modérateur).
-- `posts.category` est un simple champ texte libre, pas une table de catégories normalisée.
-- Pas de recherche plein texte (index `pg_trgm`/`tsvector`) configurée.
+- Pas de notifications ni de messagerie privée.
+- Pas de modération (signalement de contenu) ni de rôles (admin/modérateur, compte « commune »).
+- `posts.category` est un champ texte libre (liste gérée côté appli), pas une table normalisée.
+- Pas de recherche plein texte ; pas d'estimation chiffrée de l'impact environnemental.
+- Les vues anonymes ne sont pas comptées dans `views_count`.
+
+## Diagnostic
+
+`GET /api/health` (application déployée) exécute chaque forme de requête utilisée par
+l'appli et renvoie `ok` ou le message d'erreur PostgREST — utile pour vérifier une
+jointure ou une vue sans accès à la console.
 
 Toute évolution de schéma doit passer par une nouvelle migration dans
 `supabase/migrations/`, puis une régénération des types (`generate_typescript_types`) et

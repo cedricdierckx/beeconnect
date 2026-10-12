@@ -1,4 +1,4 @@
-# BeeConnect — instructions pour agents
+# EarthConnect (ex-BeeConnect) — instructions pour agents
 
 ## Branche
 
@@ -26,3 +26,13 @@ par rebase) est décrit dans `docs/chantiers/README.md` — le lire avant toute 
 - [Next.js](https://nextjs.org/) (App Router, TypeScript) — voir `README.md`
 - [Supabase](https://supabase.com/) (base de données, authentification, stockage) —
   client typé dans `lib/supabase/client.ts`, types dans `lib/supabase/database.types.ts`
+
+## Produit et interface
+
+Le produit s'appelle **EarthConnect** (le nom BeeConnect ne subsiste que dans les noms
+d'infrastructure : dépôt, projet Vercel, projet Supabase). Concept : « Polliniser » remplace
+le « J'aime » ; graines → pollinisations → « Je me lance » → floraisons (voir `README.md`).
+L'interface doit rester **très attrayante, simple d'utilisation et ludique** : réutiliser
+les classes de `app/globals.css` (`card`, `btn-primary`, `btn-honey`, `btn-ghost`, `input`,
+`chip`…), la palette Tailwind (`leaf`, `honey`, `petal`, `sky`, `cream`) et les composants
+de `app/components/`. Textes en français, tutoiement.

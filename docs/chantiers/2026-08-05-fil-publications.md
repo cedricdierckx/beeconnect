@@ -1,6 +1,7 @@
 # Chantier : fil de publications et création de post
 
-**Statut : En cours** (agent : refonte EarthConnect — MVP complet, depuis : 2026-10-12)
+**Statut : Clôturé**
+**Clôturé le : 2026-10-12**
 **Créé le : 2026-08-05**
 
 ## Périmètre
@@ -31,3 +32,8 @@ existent.
 
 Un utilisateur authentifié peut publier un message et le voir apparaître dans le fil.
 `npx tsc --noEmit` passe.
+
+## Résolution
+
+Réalisé dans le cadre du chantier `2026-10-12-refonte-earthconnect.md` (renommage en
+EarthConnect, « J'aime » remplacé par « Polliniser »). Voir ce fichier pour le détail.

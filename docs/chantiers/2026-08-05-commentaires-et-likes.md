@@ -1,6 +1,7 @@
 # Chantier : commentaires et mentions « j'aime »
 
-**Statut : En cours** (agent : refonte EarthConnect — MVP complet, depuis : 2026-10-12)
+**Statut : Clôturé**
+**Clôturé le : 2026-10-12**
 **Créé le : 2026-08-05**
 
 ## Périmètre
@@ -31,3 +32,8 @@ crasher l'interface (upsert ou vérification préalable de l'état).
 Props d'intégration documentées en tête de chaque composant (commentaire JSDoc), pour que
 le chantier « fil de publications » puisse les brancher sans ambiguïté. `npx tsc --noEmit`
 passe.
+
+## Résolution
+
+Réalisé dans le cadre du chantier `2026-10-12-refonte-earthconnect.md` (renommage en
+EarthConnect, « J'aime » remplacé par « Polliniser »). Voir ce fichier pour le détail.

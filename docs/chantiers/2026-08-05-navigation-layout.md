@@ -1,6 +1,7 @@
 # Chantier : mise en page commune et navigation
 
-**Statut : En cours** (agent : refonte EarthConnect — MVP complet, depuis : 2026-10-12)
+**Statut : Clôturé**
+**Clôturé le : 2026-10-12**
 **Créé le : 2026-08-05**
 
 ## Périmètre
@@ -33,3 +34,8 @@ mise en page commune ni navigation entre les futures pages (fil, profil, connexi
 
 Toute page de l'application partage un en-tête de navigation cohérent. `npx tsc --noEmit`
 et `npm run lint` passent.
+
+## Résolution
+
+Réalisé dans le cadre du chantier `2026-10-12-refonte-earthconnect.md` (renommage en
+EarthConnect, « J'aime » remplacé par « Polliniser »). Voir ce fichier pour le détail.

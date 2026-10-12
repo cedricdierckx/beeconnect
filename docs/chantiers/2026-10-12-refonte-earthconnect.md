@@ -1,6 +1,7 @@
 # Chantier : refonte EarthConnect (concept « Polliniser ») et MVP complet
 
-**Statut : En cours** (agent : refonte EarthConnect — MVP complet, depuis : 2026-10-12)
+**Statut : Clôturé**
+**Clôturé le : 2026-10-12**
 **Créé le : 2026-10-12**
 
 ## Périmètre
@@ -37,3 +38,27 @@ Les noms techniques d'infrastructure (dépôt GitHub `beeconnect`, projet Vercel
 ## Résultat attendu
 
 MVP déployé sur Vercel depuis `main`, `npx tsc --noEmit` et `next build` passent.
+
+## Résolution
+
+- **Supabase** : projet réactivé (il était en pause). Migrations
+  `20261012090000_earthconnect_pollinisation.sql` (likes → pollinations par renommage,
+  intentions, post_views, post_stats + déclencheurs, colonnes title/kind/parent_id/location,
+  vues profile_stats / ecosystem_stats) et `20261012100000_earthconnect_impact_views.sql`
+  (global_stats, category_stats). Testé par un bloc SQL annulé en fin d'exécution (compteurs,
+  rattachement floraison → intention, RLS) ; 0 avertissement de sécurité. Types régénérés.
+- **Interface** (Tailwind) : accueil, fil (Tout / Mon écosystème + catégories), plantation
+  de graine ou de floraison avec photo redimensionnée, détail avec chaîne d'impact,
+  profil avec statut et progression, édition de profil + avatar, tableau d'impact,
+  connexion / inscription, notifications « toast », animation de pollinisation, bulle
+  d'explication à la première visite, célébration après publication.
+- **Next.js** 14.2.5 → 14.2.35 (correctifs de sécurité). ESLint configuré.
+- `docs/DATABASE.md`, `README.md`, `CLAUDE.md` mis à jour.
+
+## Pistes ouvertes (non réalisées)
+
+- Notifications (« ta graine a fleuri chez @x »).
+- Comptes « organisation / commune » avec tableau de bord filtré sur leur territoire.
+- Modération (signalement) et estimation chiffrée de l'impact environnemental.
+- Réglage Supabase Auth → URL Configuration : Site URL = domaine de production Vercel
+  (sinon les liens de confirmation d'e-mail pointent vers `localhost`).
