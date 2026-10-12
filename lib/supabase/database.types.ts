@@ -7,6 +7,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.15"
   }
@@ -38,6 +40,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "comments_author_id_fkey"
             columns: ["author_id"]
@@ -75,8 +84,22 @@ export type Database = {
             foreignKeyName: "follows_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "follows_following_id_fkey"
@@ -87,7 +110,57 @@ export type Database = {
           },
         ]
       }
-      likes: {
+      intentions: {
+        Row: {
+          bloom_post_id: string | null
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          bloom_post_id?: string | null
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          bloom_post_id?: string | null
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intentions_bloom_post_id_fkey"
+            columns: ["bloom_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intentions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "intentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pollinations: {
         Row: {
           created_at: string
           post_id: string
@@ -105,15 +178,97 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "likes_post_id_fkey"
+            foreignKeyName: "pollinations_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "likes_user_id_fkey"
+            foreignKeyName: "pollinations_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "pollinations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_stats: {
+        Row: {
+          blooms_count: number
+          comments_count: number
+          intentions_count: number
+          pollinations_count: number
+          post_id: string
+          views_count: number
+        }
+        Insert: {
+          blooms_count?: number
+          comments_count?: number
+          intentions_count?: number
+          pollinations_count?: number
+          post_id: string
+          views_count?: number
+        }
+        Update: {
+          blooms_count?: number
+          comments_count?: number
+          intentions_count?: number
+          pollinations_count?: number
+          post_id?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_stats_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_views: {
+        Row: {
+          created_at: string
+          post_id: string
+          viewer_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          viewer_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "post_views_viewer_id_fkey"
+            columns: ["viewer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -128,6 +283,10 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          kind: string
+          location: string | null
+          parent_id: string | null
+          title: string | null
           updated_at: string
         }
         Insert: {
@@ -137,6 +296,10 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          kind?: string
+          location?: string | null
+          parent_id?: string | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
@@ -146,6 +309,10 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          kind?: string
+          location?: string | null
+          parent_id?: string | null
+          title?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -153,7 +320,21 @@ export type Database = {
             foreignKeyName: "posts_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
@@ -193,7 +374,50 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      ecosystem_stats: {
+        Row: {
+          blooms_count: number | null
+          location: string | null
+          members_count: number | null
+          pollinations_count: number | null
+          seeds_count: number | null
+          views_count: number | null
+        }
+        Relationships: []
+      }
+      profile_stats: {
+        Row: {
+          blooms_count: number | null
+          blooms_inspired: number | null
+          followers_count: number | null
+          following_count: number | null
+          intentions_count: number | null
+          pollinations_given: number | null
+          profile_id: string | null
+          seeds_count: number | null
+        }
+        Insert: {
+          blooms_count?: never
+          blooms_inspired?: never
+          followers_count?: never
+          following_count?: never
+          intentions_count?: never
+          pollinations_given?: never
+          profile_id?: string | null
+          seeds_count?: never
+        }
+        Update: {
+          blooms_count?: never
+          blooms_inspired?: never
+          followers_count?: never
+          following_count?: never
+          intentions_count?: never
+          pollinations_given?: never
+          profile_id?: string | null
+          seeds_count?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
@@ -215,12 +439,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -244,11 +468,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -269,11 +493,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -294,11 +518,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -311,11 +535,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
