@@ -92,7 +92,7 @@ Publications : une **graine** (`kind = 'seed'`, action originale partagée) ou u
 | `image_url` | `text` | nullable | URL publique dans le bucket `post-images` |
 | `category` | `text` | nullable | Identifiant libre ; l'appli utilise la liste `CATEGORIES` de `lib/earth.ts` (`biodiversite`, `potager`, `compost`, `eau`, `nettoyage`, `mobilite`, `dechets`, `energie`, `arbres`, `autre`) |
 | `kind` | `text` | NOT NULL, défaut `'seed'`, `check in ('seed','bloom')` | Graine ou floraison |
-| `parent_id` | `uuid` | nullable, FK → `posts.id` (`on delete set null`) | Pour une floraison : la graine d'origine. Jointure PostgREST : `parent:posts!posts_parent_id_fkey(...)` |
+| `parent_id` | `uuid` | nullable, FK → `posts.id` (`on delete set null`) | Pour une floraison : la graine d'origine. Jointure PostgREST : `parent:posts!parent_id(...)` |
 | `location` | `text` | nullable | Commune/quartier (écosystème local) |
 | `created_at` | `timestamptz` | défaut `now()` | |
 | `updated_at` | `timestamptz` | défaut `now()`, maintenu par déclencheur | |
@@ -259,7 +259,7 @@ await supabase.from("posts").insert({
 await supabase.from("pollinations").insert({ post_id, user_id: session.user!.id });
 
 // Requête complète du fil : voir POST_SELECT dans lib/posts.ts
-// author:profiles!posts_author_id_fkey(...), stats:post_stats(...), parent:posts!posts_parent_id_fkey(...)
+// author:profiles!posts_author_id_fkey(...), stats:post_stats(...), parent:posts!parent_id(...)
 // ⚠️ Depuis `posts`, toujours préciser `!posts_author_id_fkey` : sans ce suffixe, PostgREST
 // renvoie « more than one relationship was found for 'posts' and 'profiles' » (liens
 // indirects via pollinations, intentions, post_views, comments).
