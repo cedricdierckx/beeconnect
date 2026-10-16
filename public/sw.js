@@ -1,6 +1,7 @@
 // Service worker EarthConnect : page hors-ligne et mise en cache des ressources statiques.
 // Les appels à Supabase (autre domaine) ne sont jamais mis en cache.
-const VERSION = "ec-v1";
+// Changer la version purge les caches des versions précédentes à l'activation.
+const VERSION = "ec-v2";
 const OFFLINE_URL = "/offline";
 const PRECACHE = [OFFLINE_URL, "/icons/icon-192.png", "/icons/icon-512.png"];
 
@@ -35,8 +36,11 @@ self.addEventListener("fetch", (event) => {
         (cached) =>
           cached ||
           fetch(request).then((response) => {
-            const copy = response.clone();
-            caches.open(VERSION).then((cache) => cache.put(request, copy));
+            // Ne jamais mémoriser une erreur (404 pendant un déploiement…) : elle serait resservie indéfiniment.
+            if (response.ok) {
+              const copy = response.clone();
+              caches.open(VERSION).then((cache) => cache.put(request, copy));
+            }
             return response;
           }),
       ),
