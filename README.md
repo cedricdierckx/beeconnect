@@ -32,6 +32,8 @@ voir `lib/earth.ts`).
 | `/login`, `/signup` | Authentification Supabase (e-mail + mot de passe), âge minimum et acceptation des conditions |
 | `/reset`, `/reset/update`, `/auth/confirm` | Mot de passe oublié, atterrissage des liens d'e-mail |
 | `/settings` | Export des données, membres bloqués, suppression du compte |
+| `/admin` | Espace administrateurs (rôle `admins`, voir `docs/DATABASE.md`) : vue d'ensemble, santé technique, liste des administrateurs |
+| `/admin/developpement` | Développement du réseau : objectifs chiffrés, pouls du réseau (16 semaines), parcours des membres, diagnostic automatique, plan d'actions par levier (`lib/growth.ts`) |
 | `/legal/*` | Conditions, confidentialité, mentions légales, suppression de compte (données éditeur : `lib/legal.ts`) |
 | `/api/health` | Diagnostic des requêtes Supabase (ok / erreur, aucune donnée) |
 

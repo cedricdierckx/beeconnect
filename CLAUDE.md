@@ -36,3 +36,13 @@ L'interface doit rester **très attrayante, simple d'utilisation et ludique** : 
 les classes de `app/globals.css` (`card`, `btn-primary`, `btn-honey`, `btn-ghost`, `input`,
 `chip`…), la palette Tailwind (`leaf`, `honey`, `petal`, `sky`, `cream`) et les composants
 de `app/components/`. Textes en français, tutoiement.
+
+## Espace administrateurs
+
+`/admin` (coquille `app/admin/AdminShell.tsx`, onglets dans `ADMIN_SECTIONS`) n'est visible
+que pour les membres de la table `admins` (`useAuth().isAdmin`) ; la protection réelle est
+faite par les politiques RLS (`is_admin()`), jamais par l'interface seule. Toute nouvelle
+section de l'espace s'ajoute dans `app/admin/<section>/` et dans `ADMIN_SECTIONS`. La page
+« Développement du réseau » (`app/admin/developpement/`) s'appuie sur `lib/growth.ts`
+(leviers, objectifs, diagnostic, plan de départ) et sur les vues `growth_funnel` /
+`growth_weekly`.

@@ -9,6 +9,14 @@ Dernière vérification en direct sur le projet : 2026-10-12. Statut : schéma a
 (migrations EarthConnect incluses), 0 avertissement de sécurité (`get_advisors`), RLS
 activée sur toutes les tables `public`, vues en `security_invoker`.
 
+> ⚠️ **Migration en attente d'application** (2026-10-19) :
+> `20261019100000_earthconnect_admin_space.sql` (espace administrateurs : `admins`,
+> `is_admin()`, `growth_goals`, `growth_actions`, vues `growth_funnel` / `growth_weekly`,
+> politiques administrateur sur `reports`). Le connecteur Supabase de la session qui l'a
+> écrite n'avait pas accès au projet : à coller dans Supabase → SQL Editor, puis régénérer
+> `lib/supabase/database.types.ts` (`generate_typescript_types`) — les types ont été écrits
+> à la main en attendant. Testée localement sur PostgreSQL 16 (vues, RLS par rôle).
+
 > Le produit s'appelle désormais **EarthConnect**. Les noms d'infrastructure restent
 > ceux d'origine : projet Supabase `BeeConnect Project`, projet Vercel `beeconnect`,
 > dépôt GitHub `beeconnect`.
@@ -48,9 +56,13 @@ auth.users (géré par Supabase Auth)
          │      └── post_views (post_id → posts.id, viewer_id → profiles.id)
          ├── follows (follower_id → profiles.id, following_id → profiles.id)
          ├── blocks (blocker_id → profiles.id, blocked_id → profiles.id)
-         └── reports (reporter_id → profiles.id ; cible : post_id | comment_id | profile_id)
+         ├── reports (reporter_id → profiles.id ; cible : post_id | comment_id | profile_id)
+         ├── admins (user_id → profiles.id) — rôle administrateur
+         ├── growth_goals (created_by → profiles.id) — objectifs de développement (admins)
+         └── growth_actions (created_by → profiles.id) — plan de développement (admins)
 
-Vues (lecture seule) : profile_stats, ecosystem_stats, category_stats, global_stats
+Vues (lecture seule) : profile_stats, ecosystem_stats, category_stats, global_stats,
+growth_funnel, growth_weekly
 ```
 
 Un profil est créé **automatiquement** à l'inscription d'un utilisateur via un
@@ -205,10 +217,12 @@ ne peut pas s'abonner à lui-même.
 | `status` | `text` | `open` (défaut), `reviewed`, `actioned`, `dismissed` |
 | `created_at` | `timestamptz` | défaut `now()` |
 
-**RLS** : `INSERT` et `SELECT` limités à `auth.uid() = reporter_id`. Aucun rôle modérateur
-dans l'appli : l'éditeur traite les signalements dans la console Supabase (Table Editor,
-filtre `status = open`) et met à jour `status`. Conservation : 12 mois maximum après
-traitement (engagement de la politique de confidentialité — purge manuelle à ce stade).
+**RLS** : `INSERT` et `SELECT` limités à `auth.uid() = reporter_id` ; en plus, `SELECT` et
+`UPDATE` pour les administrateurs (`is_admin()`). L'appli n'offre pas encore d'écran de
+traitement : l'éditeur traite les signalements dans la console Supabase (Table Editor,
+filtre `status = open`) et met à jour `status` ; l'espace administrateurs affiche le
+nombre de signalements ouverts. Conservation : 12 mois maximum après traitement
+(engagement de la politique de confidentialité — purge manuelle à ce stade).
 
 ### `blocks` (membres bloqués)
 
@@ -220,6 +234,60 @@ traitement (engagement de la politique de confidentialité — purge manuelle à
 
 **RLS** : `SELECT` / `INSERT` / `DELETE` limités à `auth.uid() = blocker_id` (liste privée).
 Le masquage des contenus bloqués est fait côté appli (`useAuth().blocked`).
+
+### `admins` (rôle administrateur)
+
+| Colonne | Type | Contraintes |
+| --- | --- | --- |
+| `user_id` | `uuid` | PK, FK → `profiles.id` (`cascade`) |
+| `note` | `text` | facultatif, ≤ 200 caractères (ex. « éditeur ») |
+| `created_at` | `timestamptz` | défaut `now()` |
+
+**RLS** : `SELECT` : sa propre ligne (`auth.uid() = user_id`) ou toutes pour un
+administrateur. **Aucune politique d'écriture** : un administrateur se désigne uniquement
+depuis la console Supabase (SQL Editor) :
+
+```sql
+insert into public.admins (user_id, note)
+select id, 'éditeur' from auth.users where email = 'adresse@exemple.be';
+-- retirer le rôle : delete from public.admins where user_id = '…';
+```
+
+L'appli lit sa propre ligne au chargement (`useAuth().isAdmin`) pour afficher le lien
+« Admin » et l'espace `/admin`. La protection réelle est assurée par les politiques RLS
+ci-dessous, pas par l'interface.
+
+### `growth_goals` (objectifs de développement — administrateurs)
+
+| Colonne | Type | Contraintes |
+| --- | --- | --- |
+| `id` | `uuid` | PK |
+| `metric` | `text` | `members`, `active_30d`, `seeds`, `blooms`, `pollinations`, `intentions`, `ecosystems`, `bloom_rate` (valeur courante calculée par l'appli depuis `growth_funnel`, voir `METRICS` dans `lib/growth.ts`) |
+| `target` | `numeric` | > 0 |
+| `deadline` | `date` | facultatif |
+| `label` | `text` | facultatif, ≤ 120 caractères |
+| `created_by` | `uuid` | FK → `profiles.id` (`set null`) |
+| `created_at`, `updated_at` | `timestamptz` | `updated_at` maintenu par déclencheur |
+
+**RLS** : toutes les opérations réservées aux administrateurs (`is_admin()`).
+
+### `growth_actions` (plan de développement — administrateurs)
+
+| Colonne | Type | Contraintes |
+| --- | --- | --- |
+| `id` | `uuid` | PK |
+| `title` | `text` | 1 à 160 caractères |
+| `details` | `text` | facultatif, ≤ 2000 caractères |
+| `lever` | `text` | `acquisition`, `activation`, `retention`, `referral`, `impact`, `partnership` (`LEVERS` dans `lib/growth.ts`) |
+| `status` | `text` | `idea` (défaut), `planned`, `in_progress`, `done`, `dropped` |
+| `impact`, `effort` | `smallint` | de 1 à 3 (défaut 2) ; priorité = impact × 2 + facilité |
+| `owner` | `text` | facultatif, ≤ 80 caractères |
+| `due_date` | `date` | facultatif |
+| `created_by` | `uuid` | FK → `profiles.id` (`set null`) |
+| `created_at`, `updated_at` | `timestamptz` | `updated_at` maintenu par déclencheur |
+
+Index : `growth_actions_status_idx` (`status`, `created_at desc`).
+**RLS** : toutes les opérations réservées aux administrateurs (`is_admin()`).
 
 ## Fonctions et déclencheurs
 
@@ -234,6 +302,10 @@ Le masquage des contenus bloqués est fait côté appli (`useAuth().blocked`).
 - `public.create_post_stats()`, `public.bump_post_stat(<colonne>)`, `public.handle_bloom()` :
   `security definer`, maintiennent `post_stats` (et l'intention liée à une floraison).
   `execute` révoqué pour `anon`/`authenticated` : jamais appelées depuis l'application.
+
+- `public.is_admin()` : `security definer`, `stable`, exécutable par `anon` (renvoie faux) et
+  `authenticated`. Vrai si `auth.uid()` figure dans `admins`. Utilisée par les politiques
+  RLS de `admins`, `reports`, `growth_goals`, `growth_actions` ; peut être appelée en RPC.
 
 - `public.delete_my_account()` : `security definer`, exécutable par `authenticated` uniquement.
   Supprime la ligne `auth.users` de l'appelant ; la cascade efface toutes ses données. Les
@@ -251,6 +323,8 @@ Le masquage des contenus bloqués est fait côté appli (`useAuth().blocked`).
 | `ecosystem_stats` | Par localité (`initcap(trim(location))`) : graines, floraisons, pollinisations, vues, membres |
 | `category_stats` | Par catégorie : graines, floraisons, pollinisations |
 | `global_stats` | Une ligne : totaux de la plateforme |
+| `growth_funnel` | Une ligne (espace administrateurs) : entonnoir d'activation en comptes distincts (`members`, `with_username`, `with_profile`, `with_location`, `following_someone`, `pollinated`, `intended`, `planted`, `bloomed`), activité (`new_7d`, `new_30d`, `active_7d`, `active_30d`, `returning_30d` = inscrits depuis plus de 30 jours et actifs ce mois-ci), impact (`seeds`, `seeds_with_location`, `seeds_with_image`, `blooms`, `pollinations`, `intentions`, `germinating`, `ecosystems`) et `open_reports` (non nul uniquement pour un administrateur, via la RLS de `reports`). Un membre est « actif » s'il a publié, commenté, pollinisé ou s'est lancé. Agrégats anonymes calculés sur des tables publiques en lecture. |
+| `growth_weekly` | 16 lignes (semaines ISO, la plus ancienne en premier) : `week_start`, `new_members`, `active_members`, `seeds`, `blooms`, `pollinations`, `intentions`. |
 
 ## Authentification (Supabase Auth)
 
@@ -325,7 +399,9 @@ Les types stricts (`Database`, `Tables<'posts'>`, etc.) sont disponibles depuis
 ## Ce qui n'existe pas (volontairement, à ce stade)
 
 - Pas de notifications ni de messagerie privée.
-- Pas de modération (signalement de contenu) ni de rôles (admin/modérateur, compte « commune »).
+- Pas d'écran de modération dans l'appli (les signalements existent et sont lisibles par les
+  administrateurs, mais se traitent dans la console) ; pas de compte « commune » ni de rôle
+  modérateur distinct du rôle administrateur.
 - `posts.category` est un champ texte libre (liste gérée côté appli), pas une table normalisée.
 - Pas de recherche plein texte ; pas d'estimation chiffrée de l'impact environnemental.
 - Les vues anonymes ne sont pas comptées dans `views_count`.
