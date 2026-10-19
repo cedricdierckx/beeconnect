@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "admins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocks: {
         Row: {
           blocked_id: string
@@ -151,6 +184,114 @@ export type Database = {
           {
             foreignKeyName: "follows_following_id_fkey"
             columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      growth_actions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          details: string | null
+          due_date: string | null
+          effort: number
+          id: string
+          impact: number
+          lever: string
+          owner: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          due_date?: string | null
+          effort?: number
+          id?: string
+          impact?: number
+          lever: string
+          owner?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          due_date?: string | null
+          effort?: number
+          id?: string
+          impact?: number
+          lever?: string
+          owner?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "growth_actions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "growth_actions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      growth_goals: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deadline: string | null
+          id: string
+          label: string | null
+          metric: string
+          target: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          id?: string
+          label?: string | null
+          metric: string
+          target: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          id?: string
+          label?: string | null
+          metric?: string
+          target?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "growth_goals_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile_stats"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "growth_goals_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -531,6 +672,46 @@ export type Database = {
         }
         Relationships: []
       }
+      growth_funnel: {
+        Row: {
+          active_30d: number | null
+          active_7d: number | null
+          bloomed: number | null
+          blooms: number | null
+          ecosystems: number | null
+          following_someone: number | null
+          germinating: number | null
+          intended: number | null
+          intentions: number | null
+          members: number | null
+          new_30d: number | null
+          new_7d: number | null
+          open_reports: number | null
+          planted: number | null
+          pollinated: number | null
+          pollinations: number | null
+          returning_30d: number | null
+          seeds: number | null
+          seeds_with_image: number | null
+          seeds_with_location: number | null
+          with_location: number | null
+          with_profile: number | null
+          with_username: number | null
+        }
+        Relationships: []
+      }
+      growth_weekly: {
+        Row: {
+          active_members: number | null
+          blooms: number | null
+          intentions: number | null
+          new_members: number | null
+          pollinations: number | null
+          seeds: number | null
+          week_start: string | null
+        }
+        Relationships: []
+      }
       profile_stats: {
         Row: {
           blooms_count: number | null
@@ -567,6 +748,7 @@ export type Database = {
     }
     Functions: {
       delete_my_account: { Args: never; Returns: undefined }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
