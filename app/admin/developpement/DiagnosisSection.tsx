@@ -49,7 +49,7 @@ export default function DiagnosisSection({ funnel, actions, userId, onChange }: 
       ) : items.length === 0 ? (
         <p className="rounded-2xl bg-leaf-50 p-4 text-sm font-semibold text-leaf-700">🌟 Rien à signaler : le jardin pousse bien.</p>
       ) : (
-        <ul className="grid gap-3 lg:grid-cols-2">
+        <ul className="space-y-3">
           {items.map((d) => {
             const lever = getLever(d.lever);
             const sev = SEVERITY[d.severity];
@@ -57,7 +57,7 @@ export default function DiagnosisSection({ funnel, actions, userId, onChange }: 
             return (
               <li key={d.id} className={`rounded-2xl border-l-8 bg-white p-4 ring-1 ring-leaf-900/5 ${sev.tone}`}>
                 <div className="flex items-start justify-between gap-2">
-                  <p className="font-display font-semibold">
+                  <p className="min-w-0 flex-1 font-display font-semibold">
                     {sev.emoji} {d.title}
                   </p>
                   <span className={`chip shrink-0 px-2 py-0.5 text-[11px] ${lever.tone}`}>

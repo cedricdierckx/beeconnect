@@ -42,7 +42,7 @@ export default function WeekBars({ weeks, metric, label, tone = "bg-leaf-400" }:
           return (
             <div
               key={w.week_start ?? i}
-              className="group relative flex-1"
+              className="group flex h-full flex-1 items-end"
               title={`Semaine du ${weekLabel(w.week_start)} : ${v}`}
             >
               <div

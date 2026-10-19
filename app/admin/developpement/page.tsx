@@ -77,7 +77,7 @@ export default function GrowthPage() {
 
       <GoalsSection funnel={funnel} goals={goals} userId={user.id} onChange={loadPlan} />
       <PulseSection funnel={funnel} weeks={weeks} />
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <FunnelSection funnel={funnel} />
         <DiagnosisSection funnel={funnel} actions={actions} userId={user.id} onChange={loadPlan} />
       </div>
