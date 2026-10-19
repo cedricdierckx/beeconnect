@@ -23,6 +23,9 @@ export async function GET() {
     ecosystem_stats: supabase.from("ecosystem_stats").select("*").limit(1),
     category_stats: supabase.from("category_stats").select("*").limit(1),
     global_stats: supabase.from("global_stats").select("*").limit(1),
+    growth_funnel: supabase.from("growth_funnel").select("*").limit(1),
+    growth_weekly: supabase.from("growth_weekly").select("*").limit(1),
+    admins: supabase.from("admins").select("user_id").limit(1),
     follows: supabase.from("follows").select("following_id").limit(1),
     blooms: supabase
       .from("posts")

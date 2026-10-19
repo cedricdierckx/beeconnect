@@ -13,7 +13,7 @@ const LINKS = [
 
 export default function NavBar() {
   const pathname = usePathname();
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, isAdmin } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 border-b border-leaf-900/5 bg-cream/80 backdrop-blur-md">
@@ -34,6 +34,16 @@ export default function NavBar() {
               </Link>
             );
           })}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className={`chip px-4 py-2 font-display ${
+                pathname.startsWith("/admin") ? "bg-leaf-100 text-leaf-800" : "text-leaf-800/70 hover:bg-white"
+              }`}
+            >
+              <span>🛠️</span> Admin
+            </Link>
+          )}
           <Link href="/new" className="btn-honey ml-2 py-2">
             🌱 Planter une graine
           </Link>
