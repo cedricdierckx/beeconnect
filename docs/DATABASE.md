@@ -5,17 +5,13 @@ agent ou développeur puisse coder contre ce schéma **sans avoir accès à la c
 Supabase**. Il fait foi tant qu'il n'a pas été mis à jour en même temps qu'une nouvelle
 migration dans `supabase/migrations/`.
 
-Dernière vérification en direct sur le projet : 2026-10-12. Statut : schéma appliqué
-(migrations EarthConnect incluses), 0 avertissement de sécurité (`get_advisors`), RLS
-activée sur toutes les tables `public`, vues en `security_invoker`.
-
-> ⚠️ **Migration en attente d'application** (2026-10-19) :
-> `20261019100000_earthconnect_admin_space.sql` (espace administrateurs : `admins`,
-> `is_admin()`, `growth_goals`, `growth_actions`, vues `growth_funnel` / `growth_weekly`,
-> politiques administrateur sur `reports`). Le connecteur Supabase de la session qui l'a
-> écrite n'avait pas accès au projet : à coller dans Supabase → SQL Editor, puis régénérer
-> `lib/supabase/database.types.ts` (`generate_typescript_types`) — les types ont été écrits
-> à la main en attendant. Testée localement sur PostgreSQL 16 (vues, RLS par rôle).
+Dernière vérification en direct sur le projet : 2026-10-20. Statut : schéma appliqué
+(migrations EarthConnect et espace administrateurs incluses), RLS activée sur toutes les
+tables `public`, vues en `security_invoker`. `get_advisors` (sécurité) : avertissements
+attendus uniquement — `is_admin()` (exécutable par `anon`/`authenticated`, renvoie faux
+pour un non-administrateur) et `delete_my_account()` (`authenticated`) sont volontairement
+`security definer` ; la protection contre les mots de passe divulgués (Auth) reste à
+activer dans la console.
 
 > Le produit s'appelle désormais **EarthConnect**. Les noms d'infrastructure restent
 > ceux d'origine : projet Supabase `BeeConnect Project`, projet Vercel `beeconnect`,

@@ -1,6 +1,6 @@
 # Chantier : espace administrateurs et page « Développement du réseau »
 
-**Statut : Bloqué** (raison : la migration `supabase/migrations/20261019100000_earthconnect_admin_space.sql` doit être appliquée dans Supabase → SQL Editor par un agent disposant du connecteur Supabase du projet `BeeConnect Project`, ou par l'éditeur ; puis désigner le premier administrateur et régénérer les types. Tout le code est en place et vérifié.)
+**Statut : Clôturé** (2026-10-20 : migration appliquée sur `BeeConnect Project`, premier administrateur désigné, types régénérés)
 **Créé le : 2026-10-19**
 
 ## Périmètre
@@ -39,16 +39,20 @@ d'impact positif possible. Aucun rôle n'existait ; l'application n'utilise que 
    sur un PostgreSQL 16 local avec stubs `auth` : vues correctes, RLS vérifiée pour anonyme,
    membre et administrateur.
 
-## Reste à faire (débloquer)
+## Déblocage (2026-10-20)
 
-1. Appliquer la migration dans Supabase → SQL Editor (le connecteur de la session
-   n'avait pas accès au projet). Vérifier ensuite `GET /api/health` (`growth_funnel`,
-   `growth_weekly`, `admins` → `ok`) et `get_advisors` (sécurité).
-2. Désigner le premier administrateur (SQL dans `docs/DATABASE.md`, section `admins`).
-3. Régénérer `lib/supabase/database.types.ts` (`generate_typescript_types`) et vérifier
-   `npx tsc --noEmit` : les types ont été écrits à la main.
-4. Dans l'espace, cliquer « Charger les objectifs de départ » et « Charger le plan de
-   départ », puis adapter.
+1. Migration appliquée via le connecteur Supabase (`apply_migration`, nom
+   `earthconnect_admin_space`). Contrôles : `growth_weekly` renvoie bien 16 semaines ;
+   `get_advisors` (sécurité) ne signale que des avertissements attendus : `is_admin()` et
+   `delete_my_account()` exécutables en `security definer` (voulu, voir
+   `docs/DATABASE.md`), et la protection contre les mots de passe divulgués désactivée
+   (réglage Auth à activer dans la console).
+2. Premier administrateur désigné (compte de l'éditeur, note « éditeur »).
+3. `lib/supabase/database.types.ts` régénéré (`generate_typescript_types`) : seul
+   `PostgrestVersion` différait des types écrits à la main (`14.5` → `14.15`) ;
+   `npx tsc --noEmit` passe.
+4. Reste à l'éditeur, dans l'espace : cliquer « Charger les objectifs de départ » et
+   « Charger le plan de départ », puis adapter.
 
 ## Pistes ouvertes
 
