@@ -306,10 +306,11 @@ Index : `growth_actions_status_idx` (`status`, `created_at desc`).
 - `public.delete_my_account()` : `security definer`, exécutable par `authenticated` uniquement.
   Supprime la ligne `auth.users` de l'appelant ; la cascade efface toutes ses données. Les
   fichiers Storage sont supprimés **avant** par l'appli (`lib/account.ts`, API Storage).
-  ⚠️ Migration `20261012120100_earthconnect_delete_my_account.sql` **à appliquer via
-  Supabase → SQL Editor** : le connecteur MCP n'aboutit pas (instruction visant
-  `auth.users`, confirmation interactive requise). Tant qu'elle manque, la suppression de
-  compte affiche un message invitant à écrire à l'adresse de contact.
+  Migration `20261012120100_earthconnect_delete_my_account.sql` appliquée par l'éditeur via
+  Supabase → SQL Editor (constaté le 2026-10-20) ; elle n'apparaît donc pas dans
+  `list_migrations`. Le connecteur MCP n'aboutit pas sur ce type d'instruction (visant
+  `auth.users`, confirmation interactive requise) : toute modification future de cette
+  fonction passe aussi par le SQL Editor.
 
 ## Vues (lecture seule, `security_invoker = on`)
 

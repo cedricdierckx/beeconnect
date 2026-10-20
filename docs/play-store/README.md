@@ -31,9 +31,8 @@ l'appli, sans nouvelle version sur le Store (sauf changement de domaine, d'icôn
    forme juridique, adresse, BCE, TVA, e-mail de contact). Tant qu'ils manquent, un bandeau
    s'affiche sur les pages légales — **Google refusera une politique de confidentialité
    incomplète**.
-2. **Fonction SQL de suppression de compte** : coller
-   `supabase/migrations/20261012120100_earthconnect_delete_my_account.sql` dans Supabase →
-   SQL Editor → Run (non applicable via le connecteur, voir `docs/DATABASE.md`).
+2. ~~**Fonction SQL de suppression de compte**~~ : ✅ appliquée (constaté le 2026-10-20,
+   voir `docs/DATABASE.md`).
 3. **Nom de domaine** (fortement recommandé avant la 1ʳᵉ publication) : l'adresse du site est
    inscrite dans l'appli et affichée sur la fiche. Avec un domaine propre (ex.
    `earthconnect.be`), mettre à jour `lib/legal.ts` (`siteUrl`), `android/twa-manifest.json`,

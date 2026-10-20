@@ -1,6 +1,6 @@
 # Chantier : préparation à la publication sur le Google Play Store
 
-**Statut : Bloqué** (raison : informations et actions réservées à l'éditeur — identité légale dans `lib/legal.ts`, fonction SQL `delete_my_account` à coller dans la console Supabase, compte développeur Google Play, choix du domaine et de l'identifiant de paquet ; détail dans `docs/play-store/README.md` §1)
+**Statut : Bloqué** (raison : informations et actions réservées à l'éditeur — identité légale dans `lib/legal.ts`, compte développeur Google Play, choix du domaine et de l'identifiant de paquet ; détail dans `docs/play-store/README.md` §1)
 **Créé le : 2026-10-12**
 
 ## Périmètre
@@ -33,6 +33,14 @@ Fait : pages légales, signalement, blocage, export et suppression de compte, co
 l'inscription, suppression des métadonnées photo, PWA (manifeste, icônes, service worker,
 hors-ligne), Digital Asset Links, configuration Bubblewrap, dossier `docs/play-store/`
 (guide, fiche, sécurité des données, visuels). Tables `reports` et `blocks` appliquées.
+
+## Avancement (2026-10-20)
+
+Fonction `delete_my_account()` constatée en place sur `BeeConnect Project` (appliquée par
+l'éditeur via le SQL Editor, d'où son absence de l'historique des migrations) : définition
+identique à `20261012120100_earthconnect_delete_my_account.sql`, `security definer`,
+exécutable par `authenticated` seulement. La suppression de compte dans l'appli est donc
+opérationnelle ; ce point est retiré de la liste de l'éditeur.
 
 Reste (éditeur) : voir `docs/play-store/README.md`, section « À fournir ou décider ».
 Une fois l'empreinte SHA-256 connue, un agent disposant du MCP Vercel peut créer la variable
