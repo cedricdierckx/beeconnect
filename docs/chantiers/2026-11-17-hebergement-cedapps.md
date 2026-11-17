@@ -141,6 +141,22 @@ le travail sur `main`, et un transfert de FamiTeam « maintenant ».
 3. Surveiller ~1 h l'ancien projet (écritures d'onglets restés ouverts), dernier
    rattrapage, puis **pause** : `POST /v1/projects/jcmcpkssjobqkmdopnhj/pause`.
 
+**État de C au 2026-11-17** :
+- B.7 terminé après saisie du mot de passe SMTP par le propriétaire : configuration Auth
+  de CedApps identique à BeeConnect (seule l'empreinte du mot de passe diffère — salée
+  par projet) ; envoi réel vérifié (invitation de test acceptée par OVH, compte supprimé).
+- Variables Vercel : `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` existent en deux exemplaires
+  (un « production », un « preview », mêmes valeurs CedApps — l'outil ne permet pas de
+  supprimer une variable) ; `NEXT_PUBLIC_SUPABASE_SCHEMA=beeconnect` (production +
+  preview). Point de retour : déploiement `dpl_DhMuMcVQZqpUEECJLvJ8wfRU69kc` (ancien projet,
+  fil corrigé). Bascule : `dpl_66PitWSbqy3NY2FyKJY9iWzD2p6k`, en ligne à 13:44:22 UTC.
+- Rattrapage par empreintes (md5 par clé primaire, aucune donnée stockée) : 0 ligne à
+  recopier pendant et après la bascule. Production contrôlée : `/api/health` vert, le
+  navigateur n'appelle plus que `gqmatjwegdepebriidif` (fil, impact, images). Le parcours
+  complet avec écriture (connexion héritée, publication avec image, profil) a été fait sur
+  la préversion de même code et mêmes variables, pas en production (pas de publication
+  d'essai visible des membres). `conges-associes` (CedApps) vérifié intact.
+
 ### D. FamiTeam
 
 1. Vérifier les prérequis (options payantes, intégration GitHub, log drains).
