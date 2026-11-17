@@ -1,6 +1,6 @@
 # Chantier : héberger EarthConnect dans le projet Supabase CedApps, puis transférer FamiTeam
 
-**Statut : En cours** (agent : migration Supabase demandée par le propriétaire, depuis : 2026-11-17)
+**Statut : Clôturé** (2026-11-17)
 **Créé le : 2026-11-17**
 
 ## Périmètre
@@ -172,6 +172,8 @@ le travail sur `main`, et un transfert de FamiTeam « maintenant ».
 Mettre à jour `docs/DATABASE.md` (ici et dans CedApps), `docs/APPS.md` de CedApps, la
 doc FamiTeam ; rappeler au propriétaire de **révoquer le jeton** `SUPABASE_ACCESS_TOKEN`.
 
+**État de D et E au 2026-11-17** : faits — voir « Résolution » en fin de fichier.
+
 ## Retour arrière (réversibilité)
 
 - **Appli** : Vercel → déploiement de production précédent → « Instant Rollback »
@@ -189,3 +191,50 @@ doc FamiTeam ; rappeler au propriétaire de **révoquer le jeton** `SUPABASE_ACC
 « Ced Pro Org » ne contient plus que NotaTeam ; « Ced Free Org » contient CedApps (avec
 EarthConnect dans le schéma `beeconnect`) et FamiTeam ; BeeConnect Project est en pause ;
 EarthConnect, les applications CedApps, FamiTeam et NotaTeam fonctionnent.
+
+## Résolution (2026-11-17)
+
+**Résultat atteint** : « Ced Pro Org » ne contient plus que NotaTeam ; « Ced Free Org »
+contient CedApps (avec EarthConnect dans le schéma `beeconnect`) et FamiTeam, tous deux
+`ACTIVE_HEALTHY` ; `BeeConnect Project` est en pause (`INACTIVE`, restaurable 90 jours).
+EarthConnect, les applications CedApps, FamiTeam et NotaTeam fonctionnent.
+
+- **B (copie)** : voir « État de B » plus haut. Méthode : catalogue réel → DDL (outil
+  `gen.sql` : tables, contraintes, index, RLS, politiques, fonctions, déclencheurs, vues,
+  commentaires, droits) ; données par `json_agg` → `json_populate_recordset`, déclencheurs
+  utilisateur désactivés ; Storage par l'API avec les clés `service_role` gardées en mémoire.
+- **C (bascule)** : production basculée à 13:44:22 UTC (`dpl_66PitWSbqy3NY2FyKJY9iWzD2p6k`),
+  aucune coupure ; rattrapage par empreintes toutes les 5 min pendant 1 h : 0 ligne ;
+  dernière parité complète ; `POST …/jcmcpkssjobqkmdopnhj/pause` à 14:53 UTC.
+- **D (FamiTeam)** : prérequis vérifiés (aucune option payante, pas de domaine
+  personnalisé, pas de branches, aucune fonction Auth réservée à l'offre payante). Les
+  sauvegardes de l'offre Pro étaient « physiques », **non téléchargeables** : à la demande
+  du propriétaire, export complet (structure + 16 tables + `auth.users` / `identities`,
+  416 lignes) remis au propriétaire puis effacé du conteneur. Transfert fait par le
+  propriétaire ; vérifié : `ACTIVE_HEALTHY`, REST, Auth (Google, SMTP inchangés), 3 Edge
+  Functions actives (le webhook Stripe refuse bien un appel non signé), Realtime
+  (`family_state`), 17 comptes / 16 familles, fami.team en ligne. **Après le transfert,
+  Supabase ne liste plus aucune sauvegarde** (0, contre 8 avant) — idem pour CedApps.
+- **Réveil quotidien** : dépôt CedApps, `app/api/keepalive` + `vercel.json` (04:23 UTC,
+  `CRON_SECRET`), testé à la main (« ok » pour les deux projets).
+- **Documentation** : ici `docs/DATABASE.md` (section « Hébergement »), `README.md`,
+  `.env.example` ; CedApps `docs/DATABASE.md`, `docs/APPS.md`, chantier
+  `2026-11-17-schema-beeconnect.md` (clôturé) ; FamiTeam `ARCHITECTURE.md`.
+- **Hors périmètre** : correction du fil qui plantait en production (`lib/posts.ts`).
+
+**Reste à faire (propriétaire / prochain agent)** :
+1. **Révoquer le jeton personnel Supabase** utilisé par ces sessions (secret réseau de
+   l'environnement Claude ; Supabase → Account → Access Tokens), puis retirer le secret
+   de l'environnement.
+2. **2026-11-18** : vérifier dans les journaux Vercel du projet `cedapps` que le cron
+   `/api/keepalive` a bien tourné à 04:23 UTC (le site CedApps est protégé par Vercel
+   Authentication ; les crons sont censés passer).
+3. Facultatif : dans Vercel (`beeconnect`), fusionner les variables
+   `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` qui existent en deux exemplaires (production et
+   preview, mêmes valeurs) — l'outil utilisé ne permettait pas de supprimer une variable.
+4. Facultatif : les réponses de `GET /v1/projects/{ref}/postgrest` contiennent le secret
+   JWT du projet ; celui de CedApps et de BeeConnect est apparu dans la conversation de
+   migration (non enregistré). Le faire tourner invaliderait toutes les sessions et les
+   clés anon : à décider par le propriétaire (risque jugé faible).
+5. Après 90 jours sans besoin de retour arrière, l'ancien projet `BeeConnect Project` peut
+   être supprimé (jamais sans l'accord du propriétaire).

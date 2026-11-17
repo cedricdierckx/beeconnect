@@ -42,8 +42,8 @@ gratuite), dans le **schéma `beeconnect`** — et non plus dans `public`. Chant
   (remplacer `public.` par `beeconnect.`, `search_path = beeconnect`), en donnant les
   droits à `anon`, `authenticated`, `service_role` comme dans `public`.
 - Ancien projet `BeeConnect Project` (réf. `jcmcpkssjobqkmdopnhj`) : plus utilisé depuis la
-  bascule ; mis en pause après une heure de surveillance, intact, restaurable 90 jours
-  (retour arrière décrit dans le chantier).
+  bascule ; **en pause** depuis le 2026-11-17, intact, restaurable 90 jours (retour arrière
+  décrit dans le chantier).
 
 - Source de vérité versionnée : `supabase/migrations/*.sql` (écrites pour `public`)
 - Types TypeScript générés : `lib/supabase/database.types.ts` (valables pour `beeconnect`)

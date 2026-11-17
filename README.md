@@ -47,7 +47,7 @@ Les noms techniques historiques sont conservés : dépôt `beeconnect`, projet V
 `beeconnect`. Depuis le 2026-11-17, les données sont dans le projet Supabase partagé
 `CedApps Project` (réf. `gqmatjwegdepebriidif`), schéma `beeconnect` — voir
 [`docs/DATABASE.md`](docs/DATABASE.md), section « Hébergement ». L'ancien projet
-`BeeConnect Project` (`jcmcpkssjobqkmdopnhj`) n'est plus utilisé (mis en pause après la bascule).
+`BeeConnect Project` (`jcmcpkssjobqkmdopnhj`) n'est plus utilisé (en pause depuis le 2026-11-17).
 
 ## Base de données
 
