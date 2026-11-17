@@ -37,6 +37,9 @@ gratuite), dans le **schéma `beeconnect`** — et non plus dans `public`. Chant
 - Le projet CedApps est gardé éveillé par un cron quotidien (dépôt CedApps,
   `app/api/keepalive`). S'il était malgré tout mis en pause (aucune donnée ne charge) :
   vérifier son statut (`get_project`) et le relancer (`restore_project`).
+- Sauvegarde : l'offre gratuite n'en fait aucune ; un workflow GitHub du dépôt CedApps
+  exporte le projet le 1er de chaque mois, chiffré, conservé 30 jours (GitHub figure
+  donc parmi les sous-traitants de `lib/legal.ts`). Voir CedApps `docs/SAUVEGARDES.md`.
 - Pour ajouter une migration : l'écrire pour `public` comme d'habitude dans
   `supabase/migrations/`, mais l'**appliquer au schéma `beeconnect`** du projet CedApps
   (remplacer `public.` par `beeconnect.`, `search_path = beeconnect`), en donnant les

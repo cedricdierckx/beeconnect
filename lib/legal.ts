@@ -42,6 +42,12 @@ export const LEGAL = {
       role: "Hébergement et diffusion de l'application web",
       location: "Réseau mondial ; traitement possible d'adresses IP aux États-Unis",
     },
+    {
+      name: "GitHub Inc.",
+      website: "https://github.com",
+      role: "Conservation de la sauvegarde mensuelle de la base de données, chiffrée avant envoi (GitHub ne peut pas la lire), effacée après 30 jours",
+      location: "États-Unis (cadre UE–États-Unis Data Privacy Framework et clauses contractuelles types)",
+    },
   ],
 
   authority: {
