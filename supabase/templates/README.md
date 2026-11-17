@@ -5,10 +5,12 @@ puis relancer la génération — ne pas éditer les `.html` à la main.
 
 ## Installation (console Supabase, non faisable via le MCP)
 
-> ✅ **Installés** dans le projet *BeeConnect Project* le 2026-10-12 (par l'utilisateur).
+> ✅ **Installés** dans le projet *CedApps Project* (`gqmatjwegdepebriidif`), qui héberge
+> EarthConnect depuis le 2026-11-17 (installés à l'origine le 2026-10-12 dans *BeeConnect
+> Project*, aujourd'hui en pause).
 > Après toute modification du script, regénérer **et** recoller les modèles concernés.
 
-Projet *BeeConnect Project* → **Authentication → Emails → Templates**. Pour chaque
+Projet *CedApps Project* → **Authentication → Emails → Templates**. Pour chaque
 modèle : coller le **sujet**, puis le contenu du fichier `.html` dans « Message body »
 (onglet *Source*), et enregistrer.
 
