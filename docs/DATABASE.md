@@ -33,9 +33,18 @@ Définies dans `.env.local` (non commité, voir `.env.example`) :
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://jcmcpkssjobqkmdopnhj.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<clé anon du projet, disponible dans Supabase > Project Settings > API>
+# Facultatif : schéma Postgres des tables (défaut « public »). « beeconnect » quand
+# l'application est hébergée dans le projet partagé CedApps (chantier
+# 2026-11-17-hebergement-cedapps).
+NEXT_PUBLIC_SUPABASE_SCHEMA=
 ```
 
-Ces deux valeurs sont publiques par nature (utilisées côté navigateur) ; elles ne donnent
+La session du navigateur est toujours rangée sous la clé
+`sb-jcmcpkssjobqkmdopnhj-auth-token` (`lib/supabase/client.ts`), quel que soit le projet :
+après un changement de projet, une session émise par l'ancien projet est renouvelée
+auprès du nouveau (jeton de rafraîchissement copié) au lieu de déconnecter le membre.
+
+Ces valeurs sont publiques par nature (utilisées côté navigateur) ; elles ne donnent
 accès qu'aux opérations autorisées par les politiques RLS ci-dessous. Aucune clé
 `service_role` n'est utilisée dans ce projet.
 
