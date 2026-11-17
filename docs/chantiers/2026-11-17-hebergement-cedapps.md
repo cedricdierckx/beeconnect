@@ -104,6 +104,29 @@ le travail sur `main`, et un transfert de FamiTeam « maintenant ».
    d'objets par bucket ; `GET /api/health` d'un déploiement de prévisualisation pointé
    sur CedApps.
 
+**État de B au 2026-11-17 (après-midi)** — fait, sauf B.7 en partie :
+- B.1–B.2 : schéma `beeconnect` généré **depuis le catalogue réel** de BeeConnect (et non
+  depuis `supabase/migrations/`, qui ne contient ni la migration
+  `fix_advisors_security_and_performance` ni l'état réel des droits) : tables, contraintes,
+  index, RLS, 34 politiques, 7 fonctions, 11 déclencheurs, 6 vues, commentaires, droits,
+  privilèges par défaut. Comparaison des deux catalogues : 705 éléments, **0 écart**.
+- B.3–B.5 : comptes, sessions, jetons (+ `auth.mfa_amr_claims`), 13 tables, buckets,
+  7 politiques `storage.objects`, 1 objet ; URL réécrites ; déclencheur
+  `beeconnect_on_auth_user_created` créé. Parité (lignes + somme de contrôle) : complète.
+- B.6 : `db_schema` = `public,graphql_public,beeconnect`.
+- B.7 : Site URL et redirections faites. **Modèles, sujets, SMTP et limite d'envoi :
+  Supabase les refuse tant que le SMTP de CedApps n'a pas son mot de passe** (l'API ne
+  renvoie que l'empreinte SHA-256 de celui de BeeConnect) → le propriétaire doit le saisir
+  (Authentication → Emails → SMTP Settings de CedApps), puis appliquer le reste par l'API.
+- B.8 : préversion `dpl_6m2qcRe7NuB44tuzKJoaWBAfjFwg` (variables « preview » pointées sur
+  CedApps, variables « production » inchangées) : `/api/health` vert ; parcours Playwright
+  avec un compte d'essai (session émise par l'ancien projet → renouvelée par CedApps sans
+  déconnexion, publication avec image, profil) : OK.
+- **Hors périmètre, trouvé en chemin** : le fil plantait en production (« Oups, une fleur
+  s'est fanée ») dès qu'une floraison existait — `parent:posts!parent_id(...)` renvoie la
+  liste des floraisons *enfants*. Corrigé dans `lib/posts.ts` (`parent:parent_id(...)`) et
+  `docs/DATABASE.md`.
+
 ### C. Bascule (sans coupure)
 
 1. Variables du projet Vercel `beeconnect` (production et preview) :
