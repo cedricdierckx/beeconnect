@@ -34,8 +34,10 @@ le travail sur `main`, et un transfert de FamiTeam « maintenant ».
 ### Constats déjà faits (2026-11-17)
 
 - Le connecteur Supabase de la première session ne voyait que « Ced Pro Org ». Accès à
-  « Ced Free Org » : jeton personnel Supabase dans la variable d'environnement
-  `SUPABASE_ACCESS_TOKEN` (API de gestion `https://api.supabase.com/v1/...`, en HTTPS).
+  « Ced Free Org » : jeton personnel Supabase enregistré comme **secret réseau** de
+  l'environnement (type Bearer, hôte `api.supabase.com`) : le proxy ajoute lui-même
+  l'en-tête `Authorization` aux requêtes vers `https://api.supabase.com/v1/...` — il n'y a
+  pas de variable à lire, appeler l'API sans en-tête d'authentification.
   Le port Postgres 5432 est **fermé** depuis le conteneur : pas de `pg_dump`/`psql` ;
   tout passe par `POST /v1/projects/{ref}/database/query` (corps `{"query": "..."}`).
 - EarthConnect utilise : 13 tables `public`, 6 vues (`security_invoker`), des fonctions
