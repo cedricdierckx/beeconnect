@@ -5,7 +5,7 @@ agent ou développeur puisse coder contre ce schéma **sans avoir accès à la c
 Supabase**. Il fait foi tant qu'il n'a pas été mis à jour en même temps qu'une nouvelle
 migration dans `supabase/migrations/`.
 
-Dernière vérification en direct sur le projet : 2026-10-20. Statut : schéma appliqué
+Dernière vérification en direct sur le projet : 2026-11-17 (schéma `beeconnect` du projet CedApps, comparé élément par élément à l'ancien `public` : 0 écart). Statut : schéma appliqué
 (migrations EarthConnect et espace administrateurs incluses), RLS activée sur toutes les
 tables `public`, vues en `security_invoker`. `get_advisors` (sécurité) : avertissements
 attendus uniquement — `is_admin()` (exécutable par `anon`/`authenticated`, renvoie faux
@@ -14,16 +14,39 @@ pour un non-administrateur) et `delete_my_account()` (`authenticated`) sont volo
 activer dans la console.
 
 > Le produit s'appelle désormais **EarthConnect**. Les noms d'infrastructure restent
-> ceux d'origine : projet Supabase `BeeConnect Project`, projet Vercel `beeconnect`,
-> dépôt GitHub `beeconnect`.
->
-> Le projet Supabase (offre gratuite) se met en pause après une période d'inactivité :
-> si l'application ne charge plus aucune donnée, vérifier son statut (`get_project`) et
-> le relancer (`restore_project`).
+> ceux d'origine : projet Vercel `beeconnect`, dépôt GitHub `beeconnect`, schéma Postgres
+> `beeconnect`.
 
-- Projet Supabase : `BeeConnect Project` (réf. `jcmcpkssjobqkmdopnhj`, région `eu-west-3`)
-- Source de vérité versionnée : `supabase/migrations/*.sql`
-- Types TypeScript générés : `lib/supabase/database.types.ts`
+## Hébergement (depuis le 2026-11-17)
+
+Les données d'EarthConnect sont dans le projet Supabase partagé **`CedApps Project`**
+(réf. `gqmatjwegdepebriidif`, région `eu-west-3`, organisation « Ced Free Org », offre
+gratuite), dans le **schéma `beeconnect`** — et non plus dans `public`. Chantier :
+`docs/chantiers/2026-11-17-hebergement-cedapps.md`.
+
+- Tout ce document reste exact en remplaçant `public.` par `beeconnect.` (tables, vues,
+  fonctions, `search_path` des fonctions = `beeconnect`). Le client
+  (`lib/supabase/client.ts`) lit le schéma dans `NEXT_PUBLIC_SUPABASE_SCHEMA`.
+- Le déclencheur sur `auth.users` s'appelle `beeconnect_on_auth_user_created` et appelle
+  `beeconnect.handle_new_user()`. `auth.users` est partagé avec les autres applications
+  du projet CedApps (qui n'utilisent pas Auth à ce jour).
+- Storage : buckets `avatars` et `post-images` du projet CedApps ; les URL publiques sont
+  en `https://gqmatjwegdepebriidif.supabase.co/storage/v1/object/public/…`.
+- Configuration Auth (Site URL, redirections, modèles d'e-mails de `supabase/templates/`,
+  SMTP `hello@fami.team`) : portée par le projet CedApps.
+- Le projet CedApps est gardé éveillé par un cron quotidien (dépôt CedApps,
+  `app/api/keepalive`). S'il était malgré tout mis en pause (aucune donnée ne charge) :
+  vérifier son statut (`get_project`) et le relancer (`restore_project`).
+- Pour ajouter une migration : l'écrire pour `public` comme d'habitude dans
+  `supabase/migrations/`, mais l'**appliquer au schéma `beeconnect`** du projet CedApps
+  (remplacer `public.` par `beeconnect.`, `search_path = beeconnect`), en donnant les
+  droits à `anon`, `authenticated`, `service_role` comme dans `public`.
+- Ancien projet `BeeConnect Project` (réf. `jcmcpkssjobqkmdopnhj`) : plus utilisé depuis la
+  bascule ; mis en pause après une heure de surveillance, intact, restaurable 90 jours
+  (retour arrière décrit dans le chantier).
+
+- Source de vérité versionnée : `supabase/migrations/*.sql` (écrites pour `public`)
+- Types TypeScript générés : `lib/supabase/database.types.ts` (valables pour `beeconnect`)
 - Client applicatif typé : `lib/supabase/client.ts` (`createClient<Database>(...)`)
 
 ## Variables d'environnement requises
@@ -31,12 +54,11 @@ activer dans la console.
 Définies dans `.env.local` (non commité, voir `.env.example`) :
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://jcmcpkssjobqkmdopnhj.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<clé anon du projet, disponible dans Supabase > Project Settings > API>
-# Facultatif : schéma Postgres des tables (défaut « public »). « beeconnect » quand
-# l'application est hébergée dans le projet partagé CedApps (chantier
-# 2026-11-17-hebergement-cedapps).
-NEXT_PUBLIC_SUPABASE_SCHEMA=
+NEXT_PUBLIC_SUPABASE_URL=https://gqmatjwegdepebriidif.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<clé anon du projet CedApps, Supabase > Project Settings > API>
+# Schéma Postgres des tables : « beeconnect » dans le projet CedApps (défaut « public »,
+# l'ancien projet BeeConnect).
+NEXT_PUBLIC_SUPABASE_SCHEMA=beeconnect
 ```
 
 La session du navigateur est toujours rangée sous la clé

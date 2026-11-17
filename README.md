@@ -44,7 +44,10 @@ voir `lib/earth.ts`).
 - Déploiement [Vercel](https://vercel.com/) automatique à chaque push sur `main`
 
 Les noms techniques historiques sont conservés : dépôt `beeconnect`, projet Vercel
-`beeconnect`, projet Supabase `BeeConnect Project` (réf. `jcmcpkssjobqkmdopnhj`).
+`beeconnect`. Depuis le 2026-11-17, les données sont dans le projet Supabase partagé
+`CedApps Project` (réf. `gqmatjwegdepebriidif`), schéma `beeconnect` — voir
+[`docs/DATABASE.md`](docs/DATABASE.md), section « Hébergement ». L'ancien projet
+`BeeConnect Project` (`jcmcpkssjobqkmdopnhj`) n'est plus utilisé (mis en pause après la bascule).
 
 ## Base de données
 
